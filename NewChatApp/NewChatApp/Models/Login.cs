@@ -84,10 +84,11 @@ namespace NewChatApp.Models
             this.LastLoginInformation = lastlogininformation;
             MakeLogin();
         }
-
+        public bool LoginSuccesfull = false;
         private void MakeLogin()//TODO
         {
             throw new NotImplementedException();
+            this.LoginSuccesfull = true;
         }
     }
 }
