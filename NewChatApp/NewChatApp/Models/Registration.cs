@@ -90,12 +90,19 @@ namespace NewChatApp.Models
                 this.password = pass;
                 this.email = email;
                 this.DataRegistered = data;
+                MakeRegistration(this.Username,this.Email,this.Password,this.DataRegistered);
             }
             else
             {
                 throw new Exception("Please check the information below");
             }
         }
+        public bool IsRegistered = false;
+        private void MakeRegistration(string username, string email, string password, string dataRegistered)//TODO MAKE REGISTRATION
+        {
+            this.IsRegistered = true;
+        }
+
         private char[] Chars = new char[] { '/', '\\', '#', '&', '\'', '\"', '*' };
         private bool ValidateInformation(string name, string pass, string email, string data)
         {

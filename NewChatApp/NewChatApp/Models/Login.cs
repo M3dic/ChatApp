@@ -87,7 +87,6 @@ namespace NewChatApp.Models
         public bool LoginSuccesfull = false;
         private void MakeLogin()//TODO
         {
-            throw new NotImplementedException();
             this.LoginSuccesfull = true;
         }
     }

@@ -7,7 +7,7 @@ namespace NewChatApp.View
 {
     internal class WellcomeView
     {
-        public void Wellcome()//first
+        public void Wellcome()
         {
             Console.WriteLine("Should pick a comand or ./help");
             string[] line;
@@ -24,9 +24,10 @@ namespace NewChatApp.View
                     LoginView lview = new LoginView();
                     lview.LoginViewer();
                 }
-                else if (line[0] == "Register")
+                else if (line[0] == "/Register")
                 {
-
+                    RegisterView rview = new RegisterView();
+                    rview.RegisterViewer();
                 }
             } while (line[0] == "/end" || line[0] == "/END");
             return;
