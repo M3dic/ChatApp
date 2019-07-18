@@ -7,7 +7,7 @@ namespace NewChatApp.View
 {
     internal class WellcomeView
     {
-        public void Wellcome()
+        public void Wellcome()//first
         {
             Console.WriteLine("Should pick a comand or ./help");
             string[] line;
