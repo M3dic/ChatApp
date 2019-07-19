@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Configuration;
+using Microsoft.IdentityModel.Protocols;
 
 namespace NewChatApp.View
 {
@@ -10,6 +12,8 @@ namespace NewChatApp.View
     {
         public void RegisterViewer()
         {
+            Console.WriteLine();
+            Console.WriteLine("You are in Registration View!");
             Console.WriteLine("Try login yourself or pick ./help");
             string[] line;
             do

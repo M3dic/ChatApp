@@ -9,6 +9,8 @@ namespace NewChatApp.View
     {
         public void Wellcome()
         {
+            Console.WriteLine();
+            Console.WriteLine("You are in Wellcome View!");
             Console.WriteLine("Should pick a comand or ./help");
             string[] line;
             do

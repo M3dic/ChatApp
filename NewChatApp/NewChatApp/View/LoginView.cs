@@ -10,6 +10,8 @@ namespace NewChatApp.View
     {
         public void LoginViewer()
         {
+            Console.WriteLine();
+            Console.WriteLine("You are in Login View!");
             Console.WriteLine("Try login yourself or pick ./help");
             string[] line;
             do
@@ -32,7 +34,8 @@ namespace NewChatApp.View
         {
             if (user == null || pass == null)
             {
-                throw new ArgumentNullException("Please check your input");
+                Console.WriteLine("Please check your input");
+                return;
             }
             Login makeLogin = new Login(user, pass, DateTime.Now.ToString());
             if (makeLogin.LoginSuccesfull)

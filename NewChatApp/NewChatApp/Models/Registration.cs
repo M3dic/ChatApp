@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Text;
 
 namespace NewChatApp.Models
 {
     internal class Registration
     {
+
         public string Username { get; private set; }
         private string username
         {
@@ -86,6 +89,7 @@ namespace NewChatApp.Models
         {
             if (ValidateInformation(name, pass, email, data))
             {
+                //this.ConnectionString = ConfigurationManager.ConnectionStrings["constr"].ConnectionString;
                 this.username = name;
                 this.password = pass;
                 this.email = email;
