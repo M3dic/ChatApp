@@ -40,7 +40,8 @@ namespace NewChatApp.View
             Login makeLogin = new Login(user, pass, DateTime.Now.ToString());
             if (makeLogin.LoginSuccesfull)
             {
-                //TODO open UserView
+                UserView userView = new UserView(user,pass);
+                userView.UserViewer();
             }
         }
 

@@ -9,6 +9,19 @@ namespace NewChatApp.View
     {
         private string Name { get; set; }
         private string Email { get; set; }
+        private string Password { get; set; }
+        public UserView(string name, string email, string pass)
+        {
+            this.Name = name;
+            this.Email = email;
+            this.Password = pass;
+        }
+        public UserView(string name, string pass)
+        {
+            this.Name = name;
+            this.Email = null;
+            this.Password = pass;
+        }
         public void UserViewer()
         {
             Console.WriteLine();

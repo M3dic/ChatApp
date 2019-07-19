@@ -37,7 +37,8 @@ namespace NewChatApp.View
             Registration newRegistration = new Registration(username,pass,email,DateTime.Now.ToString());
             if (newRegistration.IsRegistered)
             {
-                //Open User view
+                UserView userView = new UserView(username, email, pass);
+                userView.UserViewer();
             }
         }
 
