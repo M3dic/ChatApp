@@ -45,7 +45,7 @@ namespace NewChatApp.View
         public void InviteFriends(string Fname)
         {
             this.friendname = Fname;
-            this.friendList.InviteFrind(this.FriendName);
+            this.friendList.InviteFriend(this.FriendName);
         }
         public void CheckInvitationList()
         {
@@ -53,7 +53,7 @@ namespace NewChatApp.View
             foreach (var item in this.friendList.Invitations)
             {
                 Console.WriteLine("New Invitation from: " + item);
-                Console.Write("Accept:[y/n] ");
+                Console.Write("Accept [y/n]: ");
                 string acceptance = Console.ReadLine();
                 if (acceptance == "y")
                 {
@@ -68,6 +68,10 @@ namespace NewChatApp.View
                 }
             }
             Console.WriteLine();
+        }
+        public void RemoveFrindFromList(string n)
+        {
+            this.friendList.RemoveFriendFromList(n);
         }
     }
 }

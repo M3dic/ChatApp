@@ -8,10 +8,6 @@ namespace NewChatApp.Models
     {
         public List<string> Invitations { get; private set; }
         public List<string> FriendsUsernames { get; private set; }
-        public void CheckInvitationList()//TODO
-        {
-          
-        }
         public void ShowFriendList(string name)//TODO make connection and check all friends
         {
             Console.WriteLine("--FRIENDS--");
@@ -22,15 +18,16 @@ namespace NewChatApp.Models
             Console.WriteLine();
 
         }
-        public void InviteFrind(string friendsname)
+        public void InviteFriend(string friendsname)
         {
             //invite
         }
-        public void RemoveFriendFromList(string friendName)
+        public void RemoveFriendFromList(string friendName)//TODO
         {
             if (this.FriendsUsernames.Contains(friendName))
             {
                 this.FriendsUsernames.Remove(friendName);
+                //TODO UPLOAD FRINED LIST
             }
             else
             {

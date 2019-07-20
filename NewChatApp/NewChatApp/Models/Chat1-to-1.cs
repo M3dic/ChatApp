@@ -32,8 +32,9 @@ namespace NewChatApp.Models
             }
         }
 
-        private void SendMessage()//TODO
+        public void SendMessage()//TODO
         {
+            //send this.Message to Reciever
             throw new NotImplementedException();
         }
 
@@ -45,10 +46,9 @@ namespace NewChatApp.Models
             return true;
         }
 
-        public Chat1_to_1(string usernametochat,string message)
+        public Chat1_to_1(string usernametochat)
         {
             this.UsernameToContact = usernametochat;
-            this.message = message;
         }
     }
 }

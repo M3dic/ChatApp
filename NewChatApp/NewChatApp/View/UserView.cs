@@ -24,6 +24,7 @@ namespace NewChatApp.View
         }
         public void UserViewer()
         {
+            FriendsView friendsView = new FriendsView(this.Name);
             Console.WriteLine();
             Console.WriteLine("You are in User View!");
             Console.WriteLine("Should pick a comand or ./help");
@@ -38,25 +39,29 @@ namespace NewChatApp.View
                 }
                 else if (line[0] == "/Friends")
                 {
-                    FriendsView friendsView = new FriendsView(this.Name);
+
                     friendsView.ShowList();
                 }
                 else if (line[0] == "/Invite" && line[1] == "friends")
                 {
-                    FriendsView friendsView = new FriendsView(this.Name);
                     friendsView.InviteFriends(line[2]);
                 }
                 else if (line[0] == "/Invitations")
                 {
-                    //SHOW INVITATIONS
+                    friendsView.CheckInvitationList();
                 }
                 else if (line[0] == "/Chat")
                 {
-                    //CHAT WITH FRIEND
+                    Chat1_1 chat1_1 = new Chat1_1(line[1]);
+                    chat1_1.OpenChat();
                 }
                 else if (line[0] == "/GroupChat")
                 {
                     //GROUPCHAT WITH FRIEND
+                }else if (line[0] == "/Remove")
+                {
+                    string name = line[1];
+                    friendsView.RemoveFrindFromList(name);
                 }
                 else if (line[0] == "/Settings")
                 {
@@ -74,6 +79,7 @@ namespace NewChatApp.View
             Console.WriteLine("./Invitations");
             Console.WriteLine("./Chat <friend username>");
             Console.WriteLine("./GroupChat <friend username> <friend username> ...");
+            Console.WriteLine("./Remove <friend username>");
             Console.WriteLine("./Settings");
         }
     }
