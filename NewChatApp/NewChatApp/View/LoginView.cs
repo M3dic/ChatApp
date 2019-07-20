@@ -6,7 +6,7 @@ using System.Text;
 
 namespace NewChatApp.View
 {
-    public class LoginView
+    internal class LoginView
     {
         public void LoginViewer()
         {

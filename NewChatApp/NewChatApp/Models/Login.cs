@@ -41,8 +41,8 @@ namespace NewChatApp.Models
         private bool ValidInput(string line)
         {
             if (line.Contains(this.Chars.ToString()))
-                return true;
-            return false;
+                return false;
+            return true;
         }
 
         public string Password { get; set; }

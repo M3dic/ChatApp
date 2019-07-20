@@ -41,8 +41,8 @@ namespace NewChatApp.Models
         private bool ValidMessage(string message)
         {
             if (message.Contains(this.Chars.ToString()))
-                return true;
-            return false;
+                return false;
+            return true;
         }
 
         public Chat1_to_1(string usernametochat,string message)

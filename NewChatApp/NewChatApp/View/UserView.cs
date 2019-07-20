@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NewChatApp.View
 {
-    public class UserView
+    internal class UserView
     {
         private string Name { get; set; }
         private string Email { get; set; }
@@ -38,11 +38,13 @@ namespace NewChatApp.View
                 }
                 else if (line[0] == "/Friends")
                 {
-                    //SHOW FRIENDS LIST
+                    FriendsView friendsView = new FriendsView(this.Name);
+                    friendsView.ShowList();
                 }
                 else if (line[0] == "/Invite" && line[1] == "friends")
                 {
-                    //INVITE FRIEND
+                    FriendsView friendsView = new FriendsView(this.Name);
+                    friendsView.InviteFriends(line[2]);
                 }
                 else if (line[0] == "/Invitations")
                 {

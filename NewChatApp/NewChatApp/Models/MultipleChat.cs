@@ -71,8 +71,8 @@ namespace NewChatApp.Models
         private bool checkmessage(string message)
         {
             if (message.Contains(this.Chars.ToString()))
-                return true;
-            return false;
+                return false;
+            return true;
         }
     }
 }

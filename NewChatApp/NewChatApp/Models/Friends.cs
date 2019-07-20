@@ -10,11 +10,21 @@ namespace NewChatApp.Models
         public List<string> FriendsUsernames { get; private set; }
         public void CheckInvitationList()//TODO
         {
+          
+        }
+        public void ShowFriendList(string name)//TODO make connection and check all friends
+        {
+            Console.WriteLine("--FRIENDS--");
+            foreach (var item in this.FriendsUsernames)
+            {
+                Console.WriteLine("Friend: " + item);
+            }
+            Console.WriteLine();
 
         }
-        public void ShowFriendList()//TODO
+        public void InviteFrind(string friendsname)
         {
-
+            //invite
         }
         public void RemoveFriendFromList(string friendName)
         {
