@@ -31,56 +31,56 @@ namespace NewChatApp.View
             string[] line;
             do
             {
-                Console.WriteLine("Enter some comand to do operation or ./end to leave: ");
+                Console.WriteLine("Enter some comand to do operation or ./leave to leave: ");
                 line = Console.ReadLine().Split().ToArray();
                 if (line[0] == "/help")
                 {
                     PrintAllComands();
                 }
-                else if (line[0] == "/Friends")
+                else if (line[0] == "/friends")
                 {
 
                     friendsView.ShowList();
                 }
-                else if (line[0] == "/Invite" && line[1] == "friends")
+                else if (line[0] == "/invite" && line[1] == "friends")
                 {
                     friendsView.InviteFriends(line[2]);
                 }
-                else if (line[0] == "/Invitations")
+                else if (line[0] == "/invitations")
                 {
                     friendsView.CheckInvitationList();
                 }
-                else if (line[0] == "/Chat")
+                else if (line[0] == "/chat")
                 {
                     Chat1_1 chat1_1 = new Chat1_1(line[1]);
                     chat1_1.OpenChat();
                 }
-                else if (line[0] == "/GroupChat")
+                else if (line[0] == "/groupChat")
                 {
                     //GROUPCHAT WITH FRIEND
-                }else if (line[0] == "/Remove")
+                }else if (line[0] == "/remove")
                 {
                     string name = line[1];
                     friendsView.RemoveFrindFromList(name);
                 }
-                else if (line[0] == "/Settings")
+                else if (line[0] == "/settings")
                 {
                     //OPEN SETTINGS
                 }
-            } while (line[0] == "/end" || line[0] == "/END");
+            } while (line[0] == "/leave" || line[0] == "/LEAVE");
             return;
         }
 
         private void PrintAllComands()
         {
-            Console.WriteLine("./end");
-            Console.WriteLine("./Friends");
-            Console.WriteLine("./Invite friends <username>");
-            Console.WriteLine("./Invitations");
-            Console.WriteLine("./Chat <friend username>");
-            Console.WriteLine("./GroupChat <friend username> <friend username> ...");
-            Console.WriteLine("./Remove <friend username>");
-            Console.WriteLine("./Settings");
+            Console.WriteLine("./leave");
+            Console.WriteLine("./friends");
+            Console.WriteLine("./invite friends <username>");
+            Console.WriteLine("./invitations");
+            Console.WriteLine("./chat <friend username>");
+            Console.WriteLine("./groupChat <friend username> <friend username> ...");
+            Console.WriteLine("./remove <friend username>");
+            Console.WriteLine("./settings");
         }
     }
 }

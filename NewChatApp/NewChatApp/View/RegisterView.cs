@@ -24,11 +24,11 @@ namespace NewChatApp.View
                 {
                     PrintAllComands();
                 }
-                else if (line[0] == "/Register")
+                else if (line[0] == "/register")
                 {
                     RegisterRealize(line[1], line[2], line[3]);
                 }
-            } while (line[0] == "/end" || line[0] == "/END");
+            } while (line[0] == "/back" || line[0] == "/BACK");
             return;
         }
 
@@ -44,8 +44,8 @@ namespace NewChatApp.View
 
         private void PrintAllComands()
         {
-            Console.WriteLine("./Register <email> <username> <password>");
-            Console.WriteLine("./end");
+            Console.WriteLine("./register <email> <username> <password>");
+            Console.WriteLine("./back");
         }
     }
 }
