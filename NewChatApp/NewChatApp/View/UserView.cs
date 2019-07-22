@@ -78,7 +78,7 @@ namespace NewChatApp.View
             Console.WriteLine("./invite friends <username>");
             Console.WriteLine("./invitations");
             Console.WriteLine("./chat <friend username>");
-            Console.WriteLine("./groupChat <friend username> <friend username> ...");
+            //Console.WriteLine("./groupChat <friend username> <friend username> ...");
             Console.WriteLine("./remove <friend username>");
             Console.WriteLine("./settings");
         }

@@ -14,11 +14,11 @@ namespace NewChatApp.View
         {
             Console.WriteLine();
             Console.WriteLine("You are in Registration View!");
-            Console.WriteLine("Try login yourself or pick ./help");
+            Console.WriteLine("Try register yourself or pick ./help");
             string[] line;
             do
             {
-                Console.WriteLine("Enter some comand to do operation or ./end to leave");
+                Console.WriteLine("Enter some comand to do operation or ./back to leave");
                 line = Console.ReadLine().Split().ToArray();
                 if (line[0] == "/help")
                 {

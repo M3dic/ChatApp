@@ -16,7 +16,7 @@ namespace NewChatApp.View
             string[] line;
             do
             {
-                Console.WriteLine("Enter some comand to do operation or ./end to leave");
+                Console.WriteLine("Enter some comand to do operation or ./back to leave");
                 line = Console.ReadLine().Split().ToArray();
                 if (line[0] == "/help")
                 {
