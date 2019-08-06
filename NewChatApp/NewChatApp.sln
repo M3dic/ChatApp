@@ -5,7 +5,11 @@ VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewChatApp", "NewChatApp\NewChatApp.csproj", "{1390F072-6456-4E02-8DA4-307E5CAC3C16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "chatapplication", "chatapplication\chatapplication.csproj", "{1A18D86B-4AA2-4351-B46B-077707B70865}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "chatapplication", "chatapplication\chatapplication.csproj", "{1A18D86B-4AA2-4351-B46B-077707B70865}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azureServiceBus", "azureServiceBus\azureServiceBus.csproj", "{A0DF3557-66FF-4051-8910-639FD79BDC22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "azureservicePort", "azureservicePort\azureservicePort.csproj", "{BBB5534A-1C0E-4FD8-BAB3-FA65C56D19C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{1A18D86B-4AA2-4351-B46B-077707B70865}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A18D86B-4AA2-4351-B46B-077707B70865}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A18D86B-4AA2-4351-B46B-077707B70865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0DF3557-66FF-4051-8910-639FD79BDC22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0DF3557-66FF-4051-8910-639FD79BDC22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0DF3557-66FF-4051-8910-639FD79BDC22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0DF3557-66FF-4051-8910-639FD79BDC22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBB5534A-1C0E-4FD8-BAB3-FA65C56D19C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBB5534A-1C0E-4FD8-BAB3-FA65C56D19C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBB5534A-1C0E-4FD8-BAB3-FA65C56D19C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBB5534A-1C0E-4FD8-BAB3-FA65C56D19C3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
