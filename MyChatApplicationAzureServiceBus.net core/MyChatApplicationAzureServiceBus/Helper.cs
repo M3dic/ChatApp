@@ -23,22 +23,23 @@ namespace ChatServiceBus
         public static void CreateTopic()
         {
             //Retrieve the connection string
-            string connectionString =
+            var connectionString =
                 ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
             if (connectionString != null)
             {
                 //connection string not null, get the namespace manager
-                var namespaceManager =
-                    NamespaceManager.CreateFromConnectionString(connectionString);
+                var namespaceManager = new 
+                    ManagementClient(connectionString);
 
                 //Retrieve the topic's name
                 string topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
 
                 // Create the topic if it does not exist already.
-                if (!namespaceManager.TopicExists(topicName))
+                if (namespaceManager.GetTopicAsync(topicName).Result.Status == EntityStatus.Unknown ||
+                    namespaceManager.GetTopicAsync(topicName).Result.Status == EntityStatus.Disabled)
                 {
                     TopicDescription td = new TopicDescription(topicName);
-                    namespaceManager.CreateTopic(td);
+                    namespaceManager.CreateTopicAsync(td);
                 }
             }
         }
@@ -57,8 +58,8 @@ namespace ChatServiceBus
             if (connectionString != null)
             {
                 //connection string not null, get the namespace manager
-                var namespaceManager =
-                    NamespaceManager.CreateFromConnectionString(connectionString);
+                var namespaceManager = new
+                    SubscriptionDescription(connectionString);
 
                 //Retrieve the topic's name
                 string topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
@@ -126,14 +127,15 @@ namespace ChatServiceBus
             if (connectionString != null)
             {
                 //connection string not null, get the namespace manager
-                var namespaceManager =
-                NamespaceManager.CreateFromConnectionString(connectionString);
+                var namespaceManager = new
+                ManagementClient(connectionString);
 
                 //Retrieve the topic's name
                 string topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
 
                 //check if subscription exists
-                return namespaceManager.SubscriptionExists(topicName, toUserNameLow);
+                if (namespaceManager.SubscriptionExistsAsync(topicName, toUserNameLow).Result.ToString() != string.Empty)
+                    return true;
             }
             //connection string null so return false, we can't get the needed info
             return false;
