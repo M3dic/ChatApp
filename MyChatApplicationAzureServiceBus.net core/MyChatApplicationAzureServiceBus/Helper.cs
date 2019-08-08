@@ -20,7 +20,7 @@ namespace ChatServiceBus
         //Retrieve the topic's name
         private static string topicName = "mytopic";
 
-        public static QueueClient Client { get; private set; }
+        public static SubscriptionClient Client { get; private set; }
 
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace ChatServiceBus
             if (connectionString != null)
             {
                 //connection string not null, get the namespace manager
-                var namespaceManager = new 
+                var namespaceManager = new
                     ManagementClient(connectionString);
 
                 // Create the topic if it does not exist already.
@@ -146,7 +146,7 @@ namespace ChatServiceBus
             {
                 //create the TopicClient object
                 var Client = new
-                    QueueClient(connectionString, topicName);
+                    TopicClient(connectionString, topicName);
 
                 //check if we have to broadcast the message or not
                 if (toUserNameLow != "all")
@@ -189,61 +189,55 @@ namespace ChatServiceBus
             if (connectionString != null)
             {
 
-                //Create the subscription client object
-                Client = new QueueClient(connectionString, topicName);
+                Task.Run(() =>
+               {
+                   try
+                   {
+                       Client = new SubscriptionClient(connectionString, topicName, userName);
 
-                // Configure the callback options                
-                MessageHandlerOptions options = new MessageHandlerOptions(ExceptionHandler);
-                //enable manual control of the method complete
-                options.AutoComplete = false;
-                //Every 5 seconds we check for new messages
-                options.MaxAutoRenewDuration = TimeSpan.FromSeconds(5);
-                /*
-                Client.SendAsync((message) =>
-                {
-                    try
-                    {
-                        // Process message from subscription
-                        Console.WriteLine("\n**Message Received!**");
-                        Console.WriteLine("\t" + message.GetBody<string>());
-                        Console.WriteLine("\n");
+                       // Configure message handler
+                       // Values are default but set for illustration
+                       var messageHandlerOptions =
+                          new MessageHandlerOptions(ExceptionReceivedHandler)
+                          {
+                              AutoComplete = false,
+                              // ExceptionReceivedHandler = set in constructor
+                              MaxAutoRenewDuration = new TimeSpan(0, 5, 0), // 5 minutes
+                              MaxConcurrentCalls = 1,
+                          };
 
-                        // Remove message from subscription.
-                        message.Complete();
-                    }
-                    catch (Exception)
-                    {
-                        // Indicates a problem, unlock message in subscription
-                        message.Abandon();
-                    }
-                }, options);
-                */
-                Client.RegisterMessageHandler(MessageProcessor,options);
+                       // Register the function that processes messages.
+                       // Once set new message will be received
+                       Client.RegisterMessageHandler(ProcessMessagesAsync, messageHandlerOptions);
+                   }
+                   catch (Exception ex)
+                   {
+                       Console.WriteLine("Error: " + ex.Message + ", " + ex.StackTrace);
+                   }
 
-                Client.CloseAsync();
+                   Console.ReadKey();
+
+                   Client.CloseAsync();
+               });
             }
-
         }
-        static async Task MessageProcessor(Message message, CancellationToken token)
+
+        static async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
-            if (message == null)
-                throw new ArgumentNullException(nameof(message));
+            // Process the message.
+            Console.WriteLine("Received message: " + Encoding.UTF8.GetString(message.Body));
 
-            Console.WriteLine("Received message: "
-                              + Encoding.UTF8.GetString(message.Body));
-            // complete the message
+            // This will complete the message, other options are availalbe
             await Client.CompleteAsync(message.SystemProperties.LockToken);
+
         }
 
-        private static Task ExceptionHandler(ExceptionReceivedEventArgs exReceivedEventArgs)
+        // Use handler to examine the exceptions received on the message pump.
+        static Task ExceptionReceivedHandler(ExceptionReceivedEventArgs exReceivedEventArgs)
         {
             // The exception context reveals what happened!
             var exContext = exReceivedEventArgs.ExceptionReceivedContext;
-
-            var msg = "Exception Endpoint: "
-                + exContext.Endpoint
-                + ", Action: "
-                + exContext.Action;
+            var msg = "Exception Endpoint: " + exContext.Endpoint + ", Action: " + exContext.Action;
             Console.WriteLine(msg);
 
             return Task.CompletedTask;
