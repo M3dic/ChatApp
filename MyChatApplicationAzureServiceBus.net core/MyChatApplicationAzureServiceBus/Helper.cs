@@ -59,8 +59,6 @@ namespace ChatServiceBus
                 var namespaceManager = new
                     ManagementClient(connectionString);
 
-                    //ConfigurationManager.AppSettings["Service.Bus.Topic"];
-
                 //validate topic exist
                 if (namespaceManager.GetTopicAsync(topicName).Result.Status != EntityStatus.Unknown ||
                     namespaceManager.GetTopicAsync(topicName).Result.Status != EntityStatus.Disabled)
@@ -93,15 +91,18 @@ namespace ChatServiceBus
                 var namespaceManager = new
                 ManagementClient(connectionString);
 
-
                 //check if the subscription doesn't exist already
-                if (namespaceManager.GetSubscriptionAsync(topicName,userName).Result.SubscriptionName.ToString()!=null)
+                try
                 {
-                    ////set the filter for this subscription
-                    //SqlFilter userNameFilter =
-                    //        new SqlFilter("UserName = '" + userNameLow + "'");
-                    //create the subscription
+                    string name = namespaceManager.GetSubscriptionAsync(topicName, userName).Result.SubscriptionName;
+                }
+                catch (AggregateException)
+                {
                     namespaceManager.CreateSubscriptionAsync(topicName, userNameLow);
+                }
+                catch (Exception)
+                {
+                    throw new Exception("Something went wrong");
                 }
             }
         }
@@ -217,8 +218,7 @@ namespace ChatServiceBus
                     }
                 }, options);
                 */
-                Client.RegisterMessageHandler(MessageProcessor,
-options);
+                Client.RegisterMessageHandler(MessageProcessor,options);
 
                 Client.CloseAsync();
             }
