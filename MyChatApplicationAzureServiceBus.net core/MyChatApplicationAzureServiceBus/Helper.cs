@@ -15,7 +15,13 @@ namespace ChatServiceBus
     /// </summary>
     public class Helper
     {
-        public static IQueueClient Client { get; private set; }
+        //Retrieve the connection string
+        private static string connectionString = "Endpoint=sb://chatapplication.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Kci9mvLVP1yj/W9b7okeJ05+1JMuRIdFJIRzA+uduic=";
+        //Retrieve the topic's name
+        private static string topicName = "mytopic";
+
+        public static QueueClient Client { get; private set; }
+
 
         /// <summary>
         /// Method to create a topic for the first configuration
@@ -23,16 +29,11 @@ namespace ChatServiceBus
         public static void CreateTopic()
         {
             //Retrieve the connection string
-            var connectionString =
-                ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
             if (connectionString != null)
             {
                 //connection string not null, get the namespace manager
                 var namespaceManager = new 
                     ManagementClient(connectionString);
-
-                //Retrieve the topic's name
-                string topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
 
                 // Create the topic if it does not exist already.
                 if (namespaceManager.GetTopicAsync(topicName).Result.Status == EntityStatus.Unknown ||
@@ -51,24 +52,21 @@ namespace ChatServiceBus
         /// <returns>the list of subscription</returns>
         public static List<SubscriptionDescription> GetSubscriptionsNames()
         {
-            //Retrieve the connection string
-            string connectionString =
-               ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
 
             if (connectionString != null)
             {
                 //connection string not null, get the namespace manager
                 var namespaceManager = new
-                    SubscriptionDescription(connectionString);
+                    ManagementClient(connectionString);
 
-                //Retrieve the topic's name
-                string topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
+                    //ConfigurationManager.AppSettings["Service.Bus.Topic"];
 
                 //validate topic exist
-                if (namespaceManager.TopicExists(topicName))
+                if (namespaceManager.GetTopicAsync(topicName).Result.Status != EntityStatus.Unknown ||
+                    namespaceManager.GetTopicAsync(topicName).Result.Status != EntityStatus.Disabled)
                 {
                     //return the list of all subscriptions of this topic
-                    return namespaceManager.GetSubscriptions(topicName).ToList();
+                    return namespaceManager.GetSubscriptionsAsync(topicName).Result.ToList();
                 }
             }
             //we can't retrieve it, connection string is missing
@@ -84,28 +82,26 @@ namespace ChatServiceBus
             //to avoid any typo, lower the string
             string userNameLow = userName.ToLowerInvariant();
 
-            //Retrieve the connection string
-            var connectionString =
-                  ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
+            //var connectionString =
+            //      ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
 
             if (connectionString != null)
             {
-                //Retrieve the topic's name
-                var topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
+                //var topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
 
                 //connection string not null, get the namespace manager
-                SubscriptionClient namespaceManager = new
-                SubscriptionClient(topicName,userName);
+                var namespaceManager = new
+                ManagementClient(connectionString);
 
 
                 //check if the subscription doesn't exist already
-                if (!namespaceManager.RequiresSession)
+                if (namespaceManager.GetSubscriptionAsync(topicName,userName).Result.SubscriptionName.ToString()!=null)
                 {
-                    //set the filter for this subscription
-                    SqlFilter userNameFilter =
-                            new SqlFilter("UserName = '" + userNameLow + "'");
+                    ////set the filter for this subscription
+                    //SqlFilter userNameFilter =
+                    //        new SqlFilter("UserName = '" + userNameLow + "'");
                     //create the subscription
-                    namespaceManager.CreateSubscription(topicName, userNameLow, userNameFilter);
+                    namespaceManager.CreateSubscriptionAsync(topicName, userNameLow);
                 }
             }
         }
@@ -120,18 +116,12 @@ namespace ChatServiceBus
             //to avoid any typo, lower the string
             string toUserNameLow = toUserName.ToLowerInvariant();
 
-            //Retrieve the connection string
-            string connectionString =
-                  ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
 
             if (connectionString != null)
             {
                 //connection string not null, get the namespace manager
                 var namespaceManager = new
                 ManagementClient(connectionString);
-
-                //Retrieve the topic's name
-                string topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
 
                 //check if subscription exists
                 if (namespaceManager.SubscriptionExistsAsync(topicName, toUserNameLow).Result.ToString() != string.Empty)
@@ -151,17 +141,10 @@ namespace ChatServiceBus
             //to avoid any typo, lower the string
             string toUserNameLow = toUserName.ToLowerInvariant();
 
-            //Retrieve the connection string
-            string connectionString =
-                    ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
-
             if (connectionString != null)
             {
-                //Retrieve the topic's name
-                string topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
-
                 //create the TopicClient object
-                IQueueClient Client = new
+                var Client = new
                     QueueClient(connectionString, topicName);
 
                 //check if we have to broadcast the message or not
@@ -202,14 +185,8 @@ namespace ChatServiceBus
             //to avoid any typo, lower the string
             string userNameLow = userName.ToLowerInvariant();
 
-            //Retrieve the connection string
-            string connectionString =
-                    ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
-
             if (connectionString != null)
             {
-                //Retrieve the topic's name
-                string topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
 
                 //Create the subscription client object
                 Client = new QueueClient(connectionString, topicName);
@@ -220,25 +197,26 @@ namespace ChatServiceBus
                 options.AutoComplete = false;
                 //Every 5 seconds we check for new messages
                 options.MaxAutoRenewDuration = TimeSpan.FromSeconds(5);
+                /*
+                Client.SendAsync((message) =>
+                {
+                    try
+                    {
+                        // Process message from subscription
+                        Console.WriteLine("\n**Message Received!**");
+                        Console.WriteLine("\t" + message.GetBody<string>());
+                        Console.WriteLine("\n");
 
-                //Client.SendAsync((message) =>
-                //{
-                //    try
-                //    {
-                //        // Process message from subscription
-                //        Console.WriteLine("\n**Message Received!**");
-                //        Console.WriteLine("\t" + message.GetBody<string>());
-                //        Console.WriteLine("\n");
-
-                //        // Remove message from subscription.
-                //        message.Complete();
-                //    }
-                //    catch (Exception)
-                //    {
-                //        // Indicates a problem, unlock message in subscription
-                //        message.Abandon();
-                //    }
-                //}, options);
+                        // Remove message from subscription.
+                        message.Complete();
+                    }
+                    catch (Exception)
+                    {
+                        // Indicates a problem, unlock message in subscription
+                        message.Abandon();
+                    }
+                }, options);
+                */
                 Client.RegisterMessageHandler(MessageProcessor,
 options);
 
@@ -246,23 +224,26 @@ options);
             }
 
         }
-        static async Task MessageProcessor(Message message,
-CancellationToken token)
+        static async Task MessageProcessor(Message message, CancellationToken token)
         {
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+
             Console.WriteLine("Received message: "
-+ Encoding.UTF8.GetString(message.Body));
+                              + Encoding.UTF8.GetString(message.Body));
             // complete the message
             await Client.CompleteAsync(message.SystemProperties.LockToken);
         }
 
-        static Task ExceptionHandler(
-ExceptionReceivedEventArgs exReceivedEventArgs)
+        private static Task ExceptionHandler(ExceptionReceivedEventArgs exReceivedEventArgs)
         {
             // The exception context reveals what happened!
             var exContext = exReceivedEventArgs.ExceptionReceivedContext;
 
-            var msg = "Exception Endpoint: " + exContext.Endpoint
-+ ", Action: " + exContext.Action;
+            var msg = "Exception Endpoint: "
+                + exContext.Endpoint
+                + ", Action: "
+                + exContext.Action;
             Console.WriteLine(msg);
 
             return Task.CompletedTask;
