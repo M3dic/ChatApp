@@ -1,19 +1,25 @@
-﻿using System;
-using chatapplication;
-using ChatServiceBus;
-using Microsoft.Azure.ServiceBus.Management;
-using Microsoft.ServiceBus.Messaging;
+﻿using Microsoft.Azure.ServiceBus.Management;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace NewChatApp
+namespace ChatServiceBus
 {
+    /// @Author : Loic Sterckx
+    /// @Date : 30 October 2016
+    /// <summary>
+    /// Class that contains the main method of the software
+    /// </summary>
     class Program
     {
-        private static string userName;
+        static string userName;
 
         static void Main(string[] args)
         {
             //Initiate the topic if not exist
-            HelperController.CreateTopic();
+            Helper.CreateTopic();
 
             //get the current user information
             Console.WriteLine("Welcome on ChatServiceBus, please enter your user name:");
@@ -21,11 +27,12 @@ namespace NewChatApp
             Console.WriteLine("Hello " + userName + ", which mode do you want to use?");
 
             //create the subscription if not exist
-            HelperController.CreateSubscription(userName);
+            Helper.CreateSubscription(userName);
 
             //show the menu
             MainMenu();
         }
+
         /// <summary>
         /// Method to display the main menu of the software
         /// </summary>
@@ -58,7 +65,7 @@ namespace NewChatApp
         private static void DisplayReceiverMenu()
         {
             Console.WriteLine("New Messages will be received here. Press 1 and enter to return to main menu");
-            HelperController.ReceiveMessageSubscription(userName);
+            Helper.ReceiveMessageSubscription(userName);
             string result = Console.ReadLine();
             if (result == "1")
             {
@@ -67,16 +74,15 @@ namespace NewChatApp
             }
         }
 
-
         /// <summary>
         /// Method to display the send menu of the software
         /// </summary>
         private static void DisplaySenderMenu()
         {
             Console.WriteLine("To who will you send a new message? (press 1 and enter to go to home menu)");
-            foreach (SubscriptionDescription subscription in HelperController.GetSubscriptionsNames())
+            foreach (SubscriptionDescription subscription in Helper.GetSubscriptionsNames())
             {
-                Console.WriteLine("\t" + subscription.Name);
+                Console.WriteLine("\t" + subscription.SubscriptionName);
             }
             Console.WriteLine("\tAll");
             string toUserName = Console.ReadLine();
@@ -87,7 +93,7 @@ namespace NewChatApp
                 return;
             }
             //check if the sender exist            
-            if (toUserName.ToLowerInvariant() != "all" && !HelperController.IsSubscriptionExist(toUserName))
+            if (toUserName.ToLowerInvariant() != "all" && !Helper.IsSubscriptionExist(toUserName))
             {
                 Console.WriteLine("Your user doesn't exist, please choose another one");
                 DisplaySenderMenu();
@@ -101,7 +107,7 @@ namespace NewChatApp
                 MainMenu();
                 return;
             }
-            HelperController.SendMessageTopic(toUserName, userName, message);
+            Helper.SendMessageTopic(toUserName, userName, message);
             Console.WriteLine("\n**Message Sent!**");
 
             //check to send another message or not
@@ -119,5 +125,7 @@ namespace NewChatApp
                     break;
             }
         }
+
+
     }
 }

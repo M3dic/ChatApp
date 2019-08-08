@@ -7,8 +7,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.ServiceBus" Version="3.4.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus" Version="5.2.0" />
-    <PackageReference Include="WindowsAzure.ServiceBus.Cqs" Version="1.0.7" />
   </ItemGroup>
 
 </Project>
