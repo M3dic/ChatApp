@@ -91,19 +91,8 @@ namespace ChatServiceBus
                 var namespaceManager = new
                 ManagementClient(ConnectionString);
 
-                //check if the subscription doesn't exist already
-                try
-                {
-                    string name = namespaceManager.GetSubscriptionAsync(TopicName, userName).Result.SubscriptionName;
-                }
-                catch (AggregateException)
-                {
-                    namespaceManager.CreateSubscriptionAsync(TopicName, userNameLow);
-                }
-                catch (Exception)
-                {
-                    throw new Exception("Something went wrong");
-                }
+                //Create new subscription
+                namespaceManager.CreateSubscriptionAsync(TopicName, userNameLow);
             }
         }
 

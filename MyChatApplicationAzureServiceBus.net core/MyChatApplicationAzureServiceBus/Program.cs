@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.ServiceBus.Management;
+﻿using chatapplication;
+using Microsoft.Azure.ServiceBus.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,23 +15,63 @@ namespace ChatServiceBus
     /// </summary>
     class Program
     {
-        static string userName;
+        private static string UserName;
+        private static string Password;
+        private static string Email;
 
         static void Main(string[] args)
         {
+            if (args is null)
+                throw new ArgumentNullException(nameof(args));
+            
             //Initiate the topic if not exist
             Helper.CreateTopic();
 
             //get the current user information
-            Console.WriteLine("Welcome on ChatServiceBus, please enter your user name:");
-            userName = Console.ReadLine();
-            Console.WriteLine("Hello " + userName + ", which mode do you want to use?");
-
-            //create the subscription if not exist
-            Helper.CreateSubscription(userName);
+            JoinChatParticipant();
 
             //show the menu
-            MainMenu();
+        }
+
+        private static void JoinChatParticipant()
+        {
+            Console.WriteLine("Login or Register");
+            string option = Console.ReadLine();
+            if(option == "Login")
+            {
+                //get the current user information
+                Console.WriteLine("Welcome on ChatServiceBus, please enter your user details:");
+
+                Console.Write("Username: ");
+                UserName = Console.ReadLine();
+                Console.Write("Password: ");
+                Password = Console.ReadLine();
+
+                Login login = new Login(UserName,Password);
+
+            }
+            else if(option == "Register")
+            {
+                Console.WriteLine("Welcome on ChatServiceBus, please register yourself:");
+
+                Console.Write("Username: ");
+                UserName = Console.ReadLine();
+                Console.Write("Password: ");
+                Password = Console.ReadLine();
+                Console.Write("Email: ");
+                Email = Console.ReadLine();
+
+                Registration registration = new Registration(UserName, Password, Email);
+                if (!registration.isRegistered)
+                    JoinChatParticipant();
+                else
+                    MainMenu();
+            }
+            else
+            {
+                JoinChatParticipant();
+                return;
+            }
         }
 
         /// <summary>
@@ -38,6 +79,7 @@ namespace ChatServiceBus
         /// </summary>
         private static void MainMenu()
         {
+            Console.WriteLine("Hello " + UserName + ", which mode do you want to use?");
             Console.WriteLine("1. Receive My Messages");
             Console.WriteLine("2. Send Messages");
             Console.WriteLine("3. Exit");
@@ -65,7 +107,7 @@ namespace ChatServiceBus
         private static void DisplayReceiverMenu()
         {
             Console.WriteLine("New Messages will be received here. Press 1 and enter to return to main menu");
-            Helper.ReceiveMessageSubscription(userName);
+            Helper.ReceiveMessageSubscription(UserName);
             string result = Console.ReadLine();
             if (result == "1")
             {
@@ -107,7 +149,7 @@ namespace ChatServiceBus
                 MainMenu();
                 return;
             }
-            Helper.SendMessageTopic(toUserName, userName, message);
+            Helper.SendMessageTopic(toUserName, UserName, message);
             Console.WriteLine("\n**Message Sent!**");
 
             //check to send another message or not
