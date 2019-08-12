@@ -16,9 +16,9 @@ namespace ChatServiceBus
     public class Helper
     {
         //Retrieve the connection string
-        private static readonly string ConnectionString = "Endpoint=sb://chatapplication.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=Kci9mvLVP1yj/W9b7okeJ05+1JMuRIdFJIRzA+uduic=";
+        private static readonly string ConnectionString = "Endpoint=sb://chatserviceapp.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=++EgzIb8X+oMd9w+vLluwTLUyPHKT8y2VP1mo4EcJM0=";
         //Retrieve the topic's name
-        private static readonly string TopicName = "mytopic";
+        private static readonly string TopicName = "chatperform";
 
         public static SubscriptionClient Client { get; private set; }
 
