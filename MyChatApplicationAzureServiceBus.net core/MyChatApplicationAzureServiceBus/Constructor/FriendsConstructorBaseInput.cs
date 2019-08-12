@@ -30,6 +30,12 @@ namespace MyChatApplicationAzureServiceBus.Constructor
 
         internal void InviteFriend(string usernaem, string friendname)
         {
+            if (string.IsNullOrWhiteSpace(usernaem))
+                throw new ArgumentException("message", nameof(usernaem));
+
+            if (string.IsNullOrWhiteSpace(friendname))
+                throw new ArgumentException("message", nameof(friendname));
+
             string query = $"INSERT INTO Friends" +
                 $" (UserName,FriendsUsername) " +
                 $"VALUES('{usernaem}', '{friendname}')";
@@ -45,6 +51,115 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                 //close connection
                 connection.CloseAsync();
             }
+        }
+        internal void GetInvitaions(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("message", nameof(username));
+
+            string query = $"Select * from Friends where FriendsUsername = '{username}' and Accepted = 'N'";
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.OpenAsync();
+                //create command and assign the query and connection from the constructor
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                //Read the data and store them in the list
+                while (dataReader.Read())
+                {
+                    Console.WriteLine("Username: "+ dataReader["UserName"].ToString().ToLowerInvariant()+" has invited you.");
+                    Console.Write("Do you want to accept him (Y/N): ");
+                    string answer = Console.ReadLine().ToUpperInvariant();
+                    if (answer == "Y")
+                    {
+                        AcceptFriendInvitation(username,dataReader["UserName"].ToString().ToLowerInvariant(),connection);
+                    }
+                    else if(answer == "N")
+                    {
+                        RemoveInvitation(dataReader["UserName"].ToString().ToLowerInvariant(), username,connection);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Not answered!");
+                    }
+                }
+
+                //close Data Reader
+                dataReader.Close();
+
+                //close connection
+                connection.CloseAsync();
+            }
+        }
+
+        private void RemoveInvitation(string friendusername, string username, MySqlConnection connection)
+        {
+            if (string.IsNullOrWhiteSpace(friendusername))
+                throw new ArgumentException("message", nameof(friendusername));
+
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("message", nameof(username));
+
+            if (connection is null)
+                throw new ArgumentNullException(nameof(connection));
+
+            string query = $"DELETE FROM Friends WHERE UserName='{friendusername}' and FriendsUsername = '{username}'";
+            MySqlCommand cmd = new MySqlCommand(query);
+            cmd.ExecuteNonQuery();
+        }
+
+        private void AcceptFriendInvitation(string username, string friendusername, MySqlConnection connection)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("message", nameof(username));
+
+            if (string.IsNullOrWhiteSpace(friendusername))
+                throw new ArgumentException("message", nameof(friendusername));
+
+            if (connection is null)
+                throw new ArgumentNullException(nameof(connection));
+
+            string query = $"Update Friends Set Accepted = 'Y' where UserName = '{username}' and FriendsUsername = '{friendusername}'";
+            string query1 = $"INSERT INTO Friends" +
+               $" (UserName,FriendsUsername,Accepted) " +
+               $"VALUES('{friendusername}', '{username}', 'Y')";
+            MySqlCommand cmd = new MySqlCommand();
+            cmd.CommandText = query;
+            cmd.Connection = connection;
+            cmd.ExecuteNonQuery();
+            cmd.CommandText = query1;
+            cmd.ExecuteNonQuery();
+        }
+
+        public HashSet<string> GetFriendsNames(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("message", nameof(username));
+
+            string query = $"SELECT FriendsUsername FROM ChatApp.Friends where UserName = '{username}' and Accepted = 'Y'";
+            HashSet<string> names = new HashSet<string>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.OpenAsync();
+                //Create Command
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                //Create a data reader and Execute the command
+                MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    names.Add(dataReader["FriendsUsername"].ToString());
+                }
+
+                //close Data Reader
+                dataReader.Close();
+
+                //close connection
+                connection.CloseAsync();
+            }
+            return names;
         }
     }
 }

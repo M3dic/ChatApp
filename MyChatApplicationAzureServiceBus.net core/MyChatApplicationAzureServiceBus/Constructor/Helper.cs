@@ -77,6 +77,9 @@ namespace ChatServiceBus
         /// <param name="userName">the name of the suscription ,which will be the user name</param>
         public static void CreateSubscription(string userName)
         {
+            if (string.IsNullOrWhiteSpace(userName))
+                throw new ArgumentException("message", nameof(userName));
+
             //to avoid any typo, lower the string
             string userNameLow = userName.ToLowerInvariant();
 
@@ -103,6 +106,9 @@ namespace ChatServiceBus
         /// <returns>true if user is known</returns>
         public static bool IsSubscriptionExist(string toUserName)
         {
+            if (string.IsNullOrWhiteSpace(toUserName))
+                throw new ArgumentException("message", nameof(toUserName));
+
             //to avoid any typo, lower the string
             string toUserNameLow = toUserName.ToLowerInvariant();
 
@@ -128,6 +134,15 @@ namespace ChatServiceBus
         /// <param name="messageContent">the content of the message</param>
         public static void SendMessageTopic(string toUserName, string fromUserName, string messageContent)
         {
+            if (string.IsNullOrWhiteSpace(toUserName))
+                throw new ArgumentException("message", nameof(toUserName));
+
+            if (string.IsNullOrWhiteSpace(fromUserName))
+                throw new ArgumentException("message", nameof(fromUserName));
+
+            if (string.IsNullOrWhiteSpace(messageContent))
+                throw new ArgumentException("message", nameof(messageContent));
+
             //to avoid any typo, lower the string
             string toUserNameLow = toUserName.ToLowerInvariant();
 
@@ -151,6 +166,9 @@ namespace ChatServiceBus
         /// <param name="userName">the username of the user to get messages</param>
         public static void ReceiveMessageSubscription(string userName)
         {
+            if (string.IsNullOrWhiteSpace(userName))
+                throw new ArgumentException("message", nameof(userName));
+
             //to avoid any typo, lower the string
             string userNameLow = userName.ToLowerInvariant();
 

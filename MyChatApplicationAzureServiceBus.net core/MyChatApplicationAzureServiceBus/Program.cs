@@ -19,7 +19,6 @@ namespace ChatServiceBus
         private static string UserName;
         private static string Password;
         private static string Email;
-        private static List<string> peoples = new List<string>();
 
         static void Main(string[] args)
         {
@@ -114,13 +113,18 @@ namespace ChatServiceBus
                     break;
             }
         }
-
+        /// <summary>
+        /// Display all invitations to current user
+        /// </summary>
         private static void DisplayInvitations()
         {
             Console.WriteLine("Invitation list. (Press 1 and enter to return to main menu)");
-
+            FriendsConstructorBaseInput invitationlist = new FriendsConstructorBaseInput();
+            invitationlist.GetInvitaions(UserName);
         }
-
+        /// <summary>
+        /// Display inviting friends
+        /// </summary>
         private static void DisplayInviteFriends()
         {
             Console.WriteLine("Which friends do you want to invite? (Press 1 and enter to return to main menu)");
@@ -162,6 +166,10 @@ namespace ChatServiceBus
         private static void DisplaySenderMenu()
         {
             Console.WriteLine("To who will you send a new message? (press 1 and enter to go to home menu)");
+            FriendsConstructorBaseInput friendsConstructor = new FriendsConstructorBaseInput();
+            //Get it hash set because of usefull check operation if many invitaions have sent
+            HashSet<string> peoples = friendsConstructor.GetFriendsNames(UserName);
+
             foreach (var item in peoples)
             {
                 Console.WriteLine(item);
@@ -184,7 +192,7 @@ namespace ChatServiceBus
 
             if (toUserName == "all")
             {
-                ChatPartisipants chat = new ChatPartisipants("Fast chat", peoples);
+                ChatPartisipants chat = new ChatPartisipants("Fast chat", peoples.ToList());
                 Console.WriteLine("Type your message for " + string.Join(", ", toUserName.ToList()));
                 string message = Console.ReadLine();
                 //check if we still don't have to exit

@@ -16,7 +16,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
         private string password;
         public RegistrationDataBaseInput(Registration registration)
         {
-            registrationinforamtion = registration;
+            registrationinforamtion = registration ?? throw new ArgumentNullException(nameof(registration));
             Initialize();
         }
         private void Initialize()
