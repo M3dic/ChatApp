@@ -48,23 +48,22 @@ namespace chatapplication
         {
             try
             {
-                SmtpClient client = new SmtpClient();
-                client.Port = 587;
-                client.Host = "smtp.gmail.com";
-                client.EnableSsl = true;
-                client.Timeout = 10000;
-                client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.UseDefaultCredentials = false;
-                client.Credentials = new System.Net.NetworkCredential("hospitalm3dic@gmail.com", "08857490200");
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
 
-                MailMessage mm = new MailMessage("donotreply@domain.com", $"{this.Email}", "Successfully registered account", $"\nUser: {this.Name} \nPassword: {this.Password}");
-                mm.BodyEncoding = UTF8Encoding.UTF8;
-                mm.DeliveryNotificationOptions = DeliveryNotificationOptions.OnFailure;
+                mail.From = new MailAddress("ivoradev14@gmail.com");
+                mail.To.Add($"{this.Email}");
+                mail.Subject = "Test Mail";
+                mail.Body = "This is for testing SMTP mail from GMAIL";
 
-                client.Send(mm);
+                SmtpServer.Port = 587;
+                SmtpServer.Credentials = new System.Net.NetworkCredential("ivoradev14@gmail.com", "08857490200");
+                SmtpServer.EnableSsl = true;
+
+                SmtpServer.Send(mail);
                 Console.WriteLine("~~Check your email for registration details~~");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }

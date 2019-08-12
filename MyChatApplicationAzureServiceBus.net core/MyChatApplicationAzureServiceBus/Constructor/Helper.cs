@@ -137,31 +137,10 @@ namespace ChatServiceBus
                 var Client = new
                     TopicClient(ConnectionString, TopicName);
 
-                //check if we have to broadcast the message or not
-                if (toUserNameLow != "all")
-                {
-                    //no broadcast needed
-                    Message message = new Message(Encoding.ASCII.GetBytes(fromUserName + ": " + messageContent));
-                    message.UserProperties["UserName"] = toUserNameLow;
-                    Client.SendAsync(message);
-                }
-                else
-                {
-                    //broadcasting the message
-                    string fromUserNameLow = fromUserName.ToLowerInvariant();
+                Message message = new Message(Encoding.ASCII.GetBytes(fromUserName + ": " + messageContent));
+                message.UserProperties["UserName"] = toUserNameLow;
+                Client.SendAsync(message);
 
-                    //retrieving all the available subscription
-                    foreach (SubscriptionDescription subDescription in GetSubscriptionsNames())
-                    {
-                        //check if we're not sending the message to ourself
-                        if (subDescription.SubscriptionName != fromUserNameLow)
-                        {
-                            Message message = new Message(Encoding.ASCII.GetBytes(fromUserName + ": " + messageContent));
-                            message.UserProperties["UserName"] = subDescription.SubscriptionName;
-                            Client.SendAsync(message);
-                        }
-                    }
-                }
             }
         }
 

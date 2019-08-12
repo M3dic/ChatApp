@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChatServiceBus;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -24,11 +25,16 @@ namespace chatapplication
         {
             Console.WriteLine("Successfully leaved chat!");
         }
-        public void SendMessage(string message)
+        public void SendMessage(string message,string fromuser)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentException("message", nameof(message));
             Message = message;
+            foreach (var toUserName in ChatPartisipantsNames)
+            {
+                Helper.SendMessageTopic(toUserName.ToString(), fromuser, message);
+            }
+            Console.WriteLine("\n**Message Sent!**");
         }
         public void AddPeopleToChat(string username)
         {

@@ -1,22 +1,22 @@
-﻿using chatapplication;
-using MySql.Data.MySqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using chatapplication;
+using MySql.Data.MySqlClient;
 
 namespace MyChatApplicationAzureServiceBus.Constructor
 {
-    public class RegistrationDataBaseInput
+    public class LoginDataBaseInput
     {
-        private Registration registrationinforamtion;
         private MySqlConnection connection;
+        private Login logindetails;
         private string server;
         private string database;
         private string uid;
         private string password;
-        public RegistrationDataBaseInput(Registration registration)
+        public LoginDataBaseInput(Login login)
         {
-            registrationinforamtion = registration;
+            logindetails = login;
             Initialize();
         }
         private void Initialize()
@@ -31,7 +31,6 @@ namespace MyChatApplicationAzureServiceBus.Constructor
 
             connection = new MySqlConnection(connectionString);
         }
-
         //open connection to database
         private bool OpenConnection()
         {
@@ -70,53 +69,31 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                 return false;
             }
         }
-        public bool RegisterNewPartisipant()
+        public bool LoginUser()
         {
-            string query = $"INSERT INTO Participants" +
-                $" (SecretNumber,UserName,Password,Email) " +
-                $"VALUES('{registrationinforamtion.SecretNumber}', '{registrationinforamtion.Name}', '{registrationinforamtion.Password}', '{registrationinforamtion.Email}')";
+            string query = $"SELECT UserName,Password,Email from Participants where UserName = '{logindetails.Username}' and Password = '{logindetails.Password}'";
             if (OpenConnection())
             {
-                if (CheckForUserName())
+                //Create Command
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                //Create a data reader and Execute the command
+                MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                //Read the data and store them in the list
+                while (dataReader.Read())
                 {
-                    //create command and assign the query and connection from the constructor
-                    MySqlCommand cmd = new MySqlCommand(query, connection);
-
-                    //Execute command
-                    cmd.ExecuteNonQuery();
-
-                    //close connection
-                    this.CloseConnection();
+                    dataReader.Close();
+                    CloseConnection();
                     return true;
                 }
+
+                //close Data Reader
+                dataReader.Close();
+                CloseConnection();
+                return false;
             }
             return false;
         }
 
-        private bool CheckForUserName()
-        {
-            string query = $"select UserName from Participants";
-            List<string> list = new List<string>();
-            //Create Command
-            MySqlCommand cmd = new MySqlCommand(query, connection);
-            //Create a data reader and Execute the command
-            MySqlDataReader dataReader = cmd.ExecuteReader();
-
-            //Read the data and store them in the list
-            while (dataReader.Read())
-            {
-                list.Add(dataReader["UserName"].ToString().ToLowerInvariant());
-            }
-
-            //close Data Reader
-            dataReader.Close();
-
-            if (list.Contains(registrationinforamtion.Name))
-            {
-                Console.WriteLine("UserName already exists");
-                return false;
-            }
-            return true;
-        }
     }
 }

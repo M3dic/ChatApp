@@ -17,6 +17,7 @@ namespace chatapplication
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("message", nameof(password));
 
+
             UserName = userName;
             Password = password;
             Friends = new Friends(UserName);

@@ -44,7 +44,7 @@ namespace chatapplication
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("message", nameof(name));
-            FriendsUsernames.Add(name);
+            FriendsUsernames.Add(name); 
         }
     }
 }
