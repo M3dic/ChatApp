@@ -32,7 +32,6 @@ namespace chatapplication
             if (myname is null)
                 throw new ArgumentNullException(nameof(myname));
 
-            throw new NotImplementedException();
         }
         public void RemoveFriend(string name)
         {
