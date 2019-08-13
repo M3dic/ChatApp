@@ -19,6 +19,7 @@ namespace ChatServiceBus
         private static string UserName;
         private static string Password;
         private static string Email;
+        private static User user;
 
         static void Main(string[] args)
         {
@@ -35,9 +36,11 @@ namespace ChatServiceBus
 
         private static void JoinChatParticipant()
         {
-            Console.WriteLine("Login or Register");
+            Console.WriteLine("Login or Register (press 0 and enter to leave project)");
             string option = Console.ReadLine();
-            if (option == "Login")
+            if (option == "0")
+                Environment.Exit(0);
+            else if (option.ToLowerInvariant() == "login")
             {
                 //get the current user information
                 Console.WriteLine("Welcome on ChatServiceBus, please enter your user details:");
@@ -52,8 +55,9 @@ namespace ChatServiceBus
                 //show the menu
                 else
                     MainMenu();
+                JoinChatParticipant();
             }
-            else if (option == "Register")
+            else if (option.ToLowerInvariant() == "register")
             {
                 Console.WriteLine("Welcome on ChatServiceBus, please register yourself:");
 
@@ -70,12 +74,14 @@ namespace ChatServiceBus
                 //show the menu
                 else
                     MainMenu();
+                JoinChatParticipant();
             }
             else
             {
                 JoinChatParticipant();
                 return;
             }
+            
         }
 
         /// <summary>
@@ -83,7 +89,7 @@ namespace ChatServiceBus
         /// </summary>
         private static void MainMenu()
         {
-            User user = new User(UserName, Password);
+            user = new User(UserName, Password);
             Console.WriteLine("Hello " + UserName + ", which mode do you want to use?");
             Console.WriteLine("1. Receive My Messages");
             Console.WriteLine("2. Invite friends");
@@ -119,8 +125,8 @@ namespace ChatServiceBus
         private static void DisplayInvitations()
         {
             Console.WriteLine("Invitation list. (Press 1 and enter to return to main menu)");
-            FriendsConstructorBaseInput invitationlist = new FriendsConstructorBaseInput();
-            invitationlist.GetInvitaions(UserName);
+            user.Friends.LoadFriends(UserName);
+            MainMenu();
         }
         /// <summary>
         /// Display inviting friends
@@ -132,17 +138,14 @@ namespace ChatServiceBus
             {
                 Console.WriteLine("\t" + subscription.SubscriptionName);
             }
-            List<string> friendsnames = Console.ReadLine().ToLowerInvariant().Split().ToList();
-            if (friendsnames[0] == "1")
+            HashSet<string> friendsnames = Console.ReadLine().ToLowerInvariant().Split().ToHashSet();
+            if (friendsnames.First() == "1")
             {
                 MainMenu();
                 return;
             }
-            FriendsConstructorBaseInput friendsConstructor = new FriendsConstructorBaseInput();
-            foreach (var friendname in friendsnames)
-            {
-                friendsConstructor.InviteFriend(UserName, friendname);
-            }
+            user.Friends.AddNewFriends(friendsnames);
+            MainMenu();
         }
 
         /// <summary>
@@ -166,14 +169,8 @@ namespace ChatServiceBus
         private static void DisplaySenderMenu()
         {
             Console.WriteLine("To who will you send a new message? (press 1 and enter to go to home menu)");
-            FriendsConstructorBaseInput friendsConstructor = new FriendsConstructorBaseInput();
-            //Get it hash set because of usefull check operation if many invitaions have sent
-            HashSet<string> peoples = friendsConstructor.GetFriendsNames(UserName);
 
-            foreach (var item in peoples)
-            {
-                Console.WriteLine(item);
-            }
+            Console.WriteLine(string.Join("  \n", user.Friends.GetFriendsUsernames()));
             Console.WriteLine("All");
             string toUserName = Console.ReadLine();
             //check if we have to exit
@@ -192,7 +189,7 @@ namespace ChatServiceBus
 
             if (toUserName == "all")
             {
-                ChatPartisipants chat = new ChatPartisipants("Fast chat", peoples.ToList());
+                ChatPartisipants chat = new ChatPartisipants("Fast chat", user.Friends.GetFriendsUsernames().ToList());
                 Console.WriteLine("Type your message for " + string.Join(", ", toUserName.ToList()));
                 string message = Console.ReadLine();
                 //check if we still don't have to exit
@@ -205,8 +202,8 @@ namespace ChatServiceBus
             }
             else
             {
-                ChatPartisipants chat = new ChatPartisipants("Fast chat", toUserName.Split().ToList());
-                Console.WriteLine("Type your message for " + string.Join(", ", toUserName.ToList()));
+                ChatPartisipants chat = new ChatPartisipants("Fast chat", toUserName.Split(' ').ToList());
+                Console.WriteLine("Type your message for " + string.Join(", ", toUserName.Split(' ').ToList()));
                 string message = Console.ReadLine();
                 //check if we still don't have to exit
                 if (message == "1")

@@ -1,13 +1,15 @@
-﻿using System;
+﻿using MyChatApplicationAzureServiceBus.Constructor;
+using System;
 using System.Collections.Generic;
 
 namespace chatapplication
 {
     public class Friends
     {
-        private readonly List<string> FriendsUsernames;
+        private readonly HashSet<string> FriendsUsernames;
+        private string MyName { get; set; }
 
-        public List<string> GetFriendsUsernames()
+        public HashSet<string> GetFriendsUsernames()
         {
             return FriendsUsernames;
         }
@@ -24,26 +26,40 @@ namespace chatapplication
             if (string.IsNullOrWhiteSpace(MyUsername))
                 throw new ArgumentException("message", nameof(MyUsername));
 
-            FriendsUsernames = new List<string>();
-            LoadFriends(MyUsername);
+            MyName = MyUsername;
+            FriendsConstructorBaseInput friendsConstructor = new FriendsConstructorBaseInput();
+            //Get it hash set because of usefull check operation if many invitaions have sent
+            HashSet<string> peoples = friendsConstructor.GetFriendsNames(MyName);
+            FriendsUsernames = peoples;
         }
-        private void LoadFriends(string myname)
+        public void LoadFriends(string myname)
         {
             if (myname is null)
                 throw new ArgumentNullException(nameof(myname));
-
+            FriendsConstructorBaseInput invitationlist = new FriendsConstructorBaseInput();
+            invitationlist.GetInvitaions(MyName);
         }
-        public void RemoveFriend(string name)
+        public void RemoveFriend(string name)//TODO
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("message", nameof(name));
             FriendsUsernames.Remove(name);
         }
-        public void AddNewFriends(string name)
+        public void AddNewFriends(HashSet<string> list)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("message", nameof(name));
-            FriendsUsernames.Add(name); 
+            if (list == null)
+                throw new ArgumentNullException(nameof(list));
+
+            foreach (var item in list)
+            {
+                FriendsUsernames.Add(item);
+            }
+
+            FriendsConstructorBaseInput friendsConstructor = new FriendsConstructorBaseInput();
+            foreach (var friendname in list)
+            {
+                friendsConstructor.InviteFriend(MyName, friendname);
+            }
         }
     }
 }

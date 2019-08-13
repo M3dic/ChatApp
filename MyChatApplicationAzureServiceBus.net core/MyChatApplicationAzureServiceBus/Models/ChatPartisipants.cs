@@ -14,7 +14,7 @@ namespace chatapplication
         {
             if (string.IsNullOrWhiteSpace(chatname))
                 throw new ArgumentException("message", nameof(chatname));
-
+            ChatPartisipantsNames = new Queue();
             ChatName = chatname;
             foreach (var item in username)
             {

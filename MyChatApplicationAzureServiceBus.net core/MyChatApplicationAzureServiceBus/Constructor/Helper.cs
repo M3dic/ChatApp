@@ -211,7 +211,7 @@ namespace ChatServiceBus
         static async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             // Process the message.
-            Console.WriteLine("Received message: \n" + Encoding.UTF8.GetString(message.Body));
+            //Console.WriteLine("Received message: \n" + Encoding.UTF8.GetString(message.Body));
 
             // This will complete the message, other options are availalbe
             await Client.CompleteAsync(message.SystemProperties.LockToken);
@@ -224,7 +224,7 @@ namespace ChatServiceBus
             // The exception context reveals what happened!
             var exContext = exReceivedEventArgs.ExceptionReceivedContext;
             var msg = "Exception Endpoint: " + exContext.Endpoint + ", Action: " + exContext.Action;
-            Console.WriteLine(msg);
+            //Console.WriteLine(msg);
 
             return Task.CompletedTask;
         }

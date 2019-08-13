@@ -74,11 +74,11 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                     string answer = Console.ReadLine().ToUpperInvariant();
                     if (answer == "Y")
                     {
-                        AcceptFriendInvitation(username,dataReader["UserName"].ToString().ToLowerInvariant(),connection);
+                        AcceptFriendInvitation(username,dataReader["UserName"].ToString().ToLowerInvariant());
                     }
                     else if(answer == "N")
                     {
-                        RemoveInvitation(dataReader["UserName"].ToString().ToLowerInvariant(), username,connection);
+                        RemoveInvitation(dataReader["UserName"].ToString().ToLowerInvariant(), username);
                     }
                     else
                     {
@@ -94,7 +94,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             }
         }
 
-        private void RemoveInvitation(string friendusername, string username, MySqlConnection connection)
+        private void RemoveInvitation(string friendusername, string username)
         {
             if (string.IsNullOrWhiteSpace(friendusername))
                 throw new ArgumentException("message", nameof(friendusername));
@@ -102,15 +102,18 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentException("message", nameof(username));
 
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-
-            string query = $"DELETE FROM Friends WHERE UserName='{friendusername}' and FriendsUsername = '{username}'";
-            MySqlCommand cmd = new MySqlCommand(query);
-            cmd.ExecuteNonQuery();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.OpenAsync();
+                string query = $"DELETE FROM Friends WHERE UserName='{friendusername}' and FriendsUsername = '{username}'";
+                MySqlCommand cmd = new MySqlCommand(query,connection);
+                cmd.ExecuteNonQuery();
+                connection.CloseAsync();
+            }
+         
         }
 
-        private void AcceptFriendInvitation(string username, string friendusername, MySqlConnection connection)
+        private void AcceptFriendInvitation(string username, string friendusername)
         {
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentException("message", nameof(username));
@@ -118,19 +121,20 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             if (string.IsNullOrWhiteSpace(friendusername))
                 throw new ArgumentException("message", nameof(friendusername));
 
-            if (connection is null)
-                throw new ArgumentNullException(nameof(connection));
-
-            string query = $"Update Friends Set Accepted = 'Y' where UserName = '{username}' and FriendsUsername = '{friendusername}'";
-            string query1 = $"INSERT INTO Friends" +
-               $" (UserName,FriendsUsername,Accepted) " +
-               $"VALUES('{friendusername}', '{username}', 'Y')";
-            MySqlCommand cmd = new MySqlCommand();
-            cmd.CommandText = query;
-            cmd.Connection = connection;
-            cmd.ExecuteNonQuery();
-            cmd.CommandText = query1;
-            cmd.ExecuteNonQuery();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.OpenAsync();
+                string query = $"Update Friends Set Accepted = 'Y' where UserName = '{friendusername}' and FriendsUsername = '{username}'";
+                string query1 = $"INSERT INTO Friends" +
+                   $" (UserName,FriendsUsername,Accepted) " +
+                   $"VALUES('{username}', '{friendusername}', 'Y')";
+                MySqlCommand cmd = new MySqlCommand(query,connection);
+                cmd.ExecuteNonQuery();
+                cmd.CommandText = query1;
+                cmd.ExecuteNonQuery();
+                connection.CloseAsync();
+                Console.WriteLine("Successfully added new friend");
+            }
         }
 
         public HashSet<string> GetFriendsNames(string username)
