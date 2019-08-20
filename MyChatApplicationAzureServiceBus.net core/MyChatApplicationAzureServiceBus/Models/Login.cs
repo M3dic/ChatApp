@@ -10,10 +10,10 @@ namespace chatapplication
         public Login(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException("message", nameof(username));
+                throw new ArgumentNullException(nameof(username));
 
             if (string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("message", nameof(password));
+                throw new ArgumentNullException(nameof(password));
 
             Username = username;
             Password = password;

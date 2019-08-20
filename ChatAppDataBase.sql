@@ -1,4 +1,5 @@
 create database if not exists ChatApp;
+
 create table Participants(
 SecretNumber varchar(200) not null,
 UserName varchar(50) not null primary key,

@@ -17,14 +17,14 @@ namespace chatapplication
         public void SetFriendsUsernames(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException("message", nameof(username));
+                throw new ArgumentNullException(nameof(username));
 
             FriendsUsernames.Add(username);
         }
         public Friends(string MyUsername)
         {
             if (string.IsNullOrWhiteSpace(MyUsername))
-                throw new ArgumentException("message", nameof(MyUsername));
+                throw new ArgumentNullException(nameof(MyUsername));
 
             MyName = MyUsername;
             FriendsConstructorBaseInput friendsConstructor = new FriendsConstructorBaseInput();
@@ -42,7 +42,7 @@ namespace chatapplication
         public void RemoveFriend(string name)//TODO
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("message", nameof(name));
+                throw new ArgumentNullException(nameof(name));
             FriendsUsernames.Remove(name);
         }
         public void AddNewFriends(HashSet<string> list)

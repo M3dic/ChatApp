@@ -18,13 +18,13 @@ namespace chatapplication
         public Registration(string name, string password, string email)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("message", nameof(name));
+                throw new ArgumentNullException(nameof(name));
 
             if (string.IsNullOrWhiteSpace(password))
-                throw new ArgumentException("message", nameof(password));
+                throw new ArgumentNullException(nameof(password));
 
             if (string.IsNullOrWhiteSpace(email))
-                throw new ArgumentException("message", nameof(email));
+                throw new ArgumentNullException(nameof(email));
 
             Name = name;
             Password = password;
@@ -34,7 +34,7 @@ namespace chatapplication
             if (registration.RegisterNewPartisipant())
             {
                 SendMessageToEmail();
-                Helper.CreateSubscription(Name);
+                AzureServiceBusHelper.CreateSubscription(Name);
                 Console.WriteLine("Successfully registered");
                 this.isRegistered = true;
             }

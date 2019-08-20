@@ -27,7 +27,7 @@ namespace ChatServiceBus
                 throw new ArgumentNullException(nameof(args));
 
             //Initiate the topic if not exist
-            Helper.CreateTopic();
+            AzureServiceBusHelper.CreateTopic();
 
             //get the current user information
             JoinChatParticipant();
@@ -134,10 +134,11 @@ namespace ChatServiceBus
         private static void DisplayInviteFriends()
         {
             Console.WriteLine("Which friends do you want to invite? (Press 1 and enter to return to main menu)");
-            foreach (SubscriptionDescription subscription in Helper.GetSubscriptionsNames())
+            foreach (string subscription in FriendsConstructorBaseInput.GetSubscriptionsNames(user.UserName))
             {
-                Console.WriteLine("\t" + subscription.SubscriptionName);
+                Console.WriteLine("\t" + subscription);
             }
+            Console.Write("Write names: ");
             HashSet<string> friendsnames = Console.ReadLine().ToLowerInvariant().Split().ToHashSet();
             if (friendsnames.First() == "1")
             {
@@ -154,7 +155,7 @@ namespace ChatServiceBus
         private static void DisplayReceiverMenu()
         {
             Console.WriteLine("New Messages will be received here. (Press 1 and enter to return to main menu)");
-            Helper.ReceiveMessageSubscription(UserName);
+            AzureServiceBusHelper.ReceiveMessageSubscription(user.UserName);
             string result = Console.ReadLine();
             if (result == "1")
             {
@@ -180,7 +181,7 @@ namespace ChatServiceBus
                 return;
             }
             //check if the sender exist            
-            if (toUserName.ToLowerInvariant() != "all" && !Helper.IsSubscriptionExist(toUserName))////////
+            if (toUserName.ToLowerInvariant() != "all" && !AzureServiceBusHelper.IsSubscriptionExist(toUserName))////////
             {
                 Console.WriteLine("Your user doesn't exist, please choose another one");
                 DisplaySenderMenu();

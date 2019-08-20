@@ -13,7 +13,7 @@ namespace chatapplication
         public ChatPartisipants(string chatname, List<string> username)
         {
             if (string.IsNullOrWhiteSpace(chatname))
-                throw new ArgumentException("message", nameof(chatname));
+                throw new ArgumentNullException(nameof(chatname));
             ChatPartisipantsNames = new Queue();
             ChatName = chatname;
             foreach (var item in username)
@@ -28,18 +28,18 @@ namespace chatapplication
         public void SendMessage(string message,string fromuser)
         {
             if (string.IsNullOrWhiteSpace(message))
-                throw new ArgumentException("message", nameof(message));
+                throw new ArgumentNullException(nameof(message));
             Message = message;
             foreach (var toUserName in ChatPartisipantsNames)
             {
-                Helper.SendMessageTopic(toUserName.ToString(), fromuser, message);
+                AzureServiceBusHelper.SendMessageTopic(toUserName.ToString(), fromuser, message);
             }
             Console.WriteLine("\n**Message Sent!**");
         }
         public void AddPeopleToChat(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException("message", nameof(username));
+                throw new ArgumentNullException(nameof(username));
             ChatPartisipantsNames.Enqueue(username);
         }
 

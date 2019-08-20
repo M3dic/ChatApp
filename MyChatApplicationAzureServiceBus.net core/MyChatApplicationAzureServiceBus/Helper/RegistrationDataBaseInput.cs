@@ -39,6 +39,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.OpenAsync();
+
                 if (CheckForUserName())
                 {
                     //create command and assign the query and connection from the constructor

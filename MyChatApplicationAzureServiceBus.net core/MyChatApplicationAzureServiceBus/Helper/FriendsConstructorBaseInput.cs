@@ -11,7 +11,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
         private string database;
         private string uid;
         private string password;
-        private string connectionString;
+        private static string connectionString;
 
         public FriendsConstructorBaseInput()
         {
@@ -24,17 +24,16 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             database = "ChatApp";
             uid = "Ivo";
             password = "123456789";
-            connectionString = "SERVER=" + server + ";" + "DATABASE=" +
-            database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
+            connectionString = "SERVER=" + server + ";" + "DATABASE=" + database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
         }
 
         internal void InviteFriend(string usernaem, string friendname)
         {
             if (string.IsNullOrWhiteSpace(usernaem))
-                throw new ArgumentException("message", nameof(usernaem));
+                throw new ArgumentNullException(nameof(usernaem));
 
             if (string.IsNullOrWhiteSpace(friendname))
-                throw new ArgumentException("message", nameof(friendname));
+                throw new ArgumentNullException(nameof(friendname));
 
             string query = $"INSERT INTO Friends" +
                 $" (UserName,FriendsUsername) " +
@@ -55,7 +54,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
         internal void GetInvitaions(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException("message", nameof(username));
+                throw new ArgumentNullException(nameof(username));
 
             string query = $"Select * from Friends where FriendsUsername = '{username}' and Accepted = 'N'";
             using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -97,10 +96,10 @@ namespace MyChatApplicationAzureServiceBus.Constructor
         private void RemoveInvitation(string friendusername, string username)
         {
             if (string.IsNullOrWhiteSpace(friendusername))
-                throw new ArgumentException("message", nameof(friendusername));
+                throw new ArgumentNullException(nameof(friendusername));
 
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException("message", nameof(username));
+                throw new ArgumentNullException(nameof(username));
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -116,31 +115,63 @@ namespace MyChatApplicationAzureServiceBus.Constructor
         private void AcceptFriendInvitation(string username, string friendusername)
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException("message", nameof(username));
+                throw new ArgumentNullException(nameof(username));
 
             if (string.IsNullOrWhiteSpace(friendusername))
-                throw new ArgumentException("message", nameof(friendusername));
+                throw new ArgumentNullException(nameof(friendusername));
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.OpenAsync();
+
                 string query = $"Update Friends Set Accepted = 'Y' where UserName = '{friendusername}' and FriendsUsername = '{username}'";
                 string query1 = $"INSERT INTO Friends" +
                    $" (UserName,FriendsUsername,Accepted) " +
                    $"VALUES('{username}', '{friendusername}', 'Y')";
-                MySqlCommand cmd = new MySqlCommand(query,connection);
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
                 cmd.ExecuteNonQuery();
                 cmd.CommandText = query1;
                 cmd.ExecuteNonQuery();
+
                 connection.CloseAsync();
+
                 Console.WriteLine("Successfully added new friend");
             }
+        }
+
+        static internal IEnumerable<string> GetSubscriptionsNames(string username)
+        {
+            string query = $"SELECT UserName FROM ChatApp.Participants where UserName != '{username}'";
+
+            List<string> list = new List<string>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.OpenAsync();
+                //create command and assign the query and connection from the constructor
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                MySqlDataReader dataReader = cmd.ExecuteReader();
+
+                //Read the data and store them in the list
+                while (dataReader.Read())
+                {
+                    list.Add("  " + dataReader["UserName"].ToString().ToLowerInvariant());
+                }
+
+                //close Data Reader
+                dataReader.Close();
+
+                connection.CloseAsync();
+            }
+            return list;
         }
 
         public HashSet<string> GetFriendsNames(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentException("message", nameof(username));
+                throw new ArgumentNullException(nameof(username));
 
             string query = $"SELECT FriendsUsername FROM ChatApp.Friends where UserName = '{username}' and Accepted = 'Y'";
             HashSet<string> names = new HashSet<string>();
@@ -165,5 +196,6 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             }
             return names;
         }
+
     }
 }

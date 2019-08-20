@@ -13,7 +13,7 @@ namespace ChatServiceBus
     /// <summary>
     /// Method that provide useful methods for the Chat Service Bus software
     /// </summary>
-    public class Helper
+    public class AzureServiceBusHelper
     {
         //Retrieve the connection string
         private static readonly string ConnectionString = "Endpoint=sb://chatserviceapp.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=++EgzIb8X+oMd9w+vLluwTLUyPHKT8y2VP1mo4EcJM0=";
@@ -50,7 +50,7 @@ namespace ChatServiceBus
         /// Get all the subscription of the chat topic (it will be the user names)
         /// </summary>
         /// <returns>the list of subscription</returns>
-        public static List<SubscriptionDescription> GetSubscriptionsNames()
+        public List<SubscriptionDescription> GetSubscriptionsNames()
         {
 
             if (ConnectionString != null)
@@ -107,7 +107,7 @@ namespace ChatServiceBus
         public static bool IsSubscriptionExist(string toUserName)
         {
             if (string.IsNullOrWhiteSpace(toUserName))
-                throw new ArgumentException("message", nameof(toUserName));
+                throw new ArgumentNullException(nameof(toUserName));
 
             //to avoid any typo, lower the string
             string toUserNameLow = toUserName.ToLowerInvariant();
@@ -135,13 +135,13 @@ namespace ChatServiceBus
         public static void SendMessageTopic(string toUserName, string fromUserName, string messageContent)
         {
             if (string.IsNullOrWhiteSpace(toUserName))
-                throw new ArgumentException("message", nameof(toUserName));
+                throw new ArgumentNullException(nameof(toUserName));
 
             if (string.IsNullOrWhiteSpace(fromUserName))
-                throw new ArgumentException("message", nameof(fromUserName));
+                throw new ArgumentNullException(nameof(fromUserName));
 
             if (string.IsNullOrWhiteSpace(messageContent))
-                throw new ArgumentException("message", nameof(messageContent));
+                throw new ArgumentNullException(nameof(messageContent));
 
             //to avoid any typo, lower the string
             string toUserNameLow = toUserName.ToLowerInvariant();
@@ -167,7 +167,7 @@ namespace ChatServiceBus
         public static void ReceiveMessageSubscription(string userName)
         {
             if (string.IsNullOrWhiteSpace(userName))
-                throw new ArgumentException("message", nameof(userName));
+                throw new ArgumentNullException(nameof(userName));
 
             //to avoid any typo, lower the string
             string userNameLow = userName.ToLowerInvariant();
@@ -211,7 +211,7 @@ namespace ChatServiceBus
         static async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             // Process the message.
-            //Console.WriteLine("Received message: \n" + Encoding.UTF8.GetString(message.Body));
+            Console.WriteLine("Received message: \n" + Encoding.UTF8.GetString(message.Body));
 
             // This will complete the message, other options are availalbe
             await Client.CompleteAsync(message.SystemProperties.LockToken);
@@ -223,7 +223,7 @@ namespace ChatServiceBus
         {
             // The exception context reveals what happened!
             var exContext = exReceivedEventArgs.ExceptionReceivedContext;
-            var msg = "Exception Endpoint: " + exContext.Endpoint + ", Action: " + exContext.Action;
+            //var msg = "Exception Endpoint: " + exContext.Endpoint + ", Action: " + exContext.Action;
             //Console.WriteLine(msg);
 
             return Task.CompletedTask;
