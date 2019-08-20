@@ -34,7 +34,6 @@ namespace chatapplication
             if (registration.RegisterNewPartisipant())
             {
                 SendMessageToEmail();
-                AzureServiceBusHelper.CreateSubscription(Name);
                 Console.WriteLine("Successfully registered");
                 this.isRegistered = true;
             }
@@ -57,7 +56,7 @@ namespace chatapplication
                 mail.Body = "This is for testing SMTP mail from GMAIL";
 
                 SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("ivoradev14@gmail.com", "08857490200");
+                SmtpServer.Credentials = new System.Net.NetworkCredential("ivoradev14@gmail.com", "");
                 SmtpServer.EnableSsl = true;
 
                 SmtpServer.Send(mail);

@@ -36,6 +36,7 @@ namespace chatapplication
         {
             if (myname is null)
                 throw new ArgumentNullException(nameof(myname));
+
             FriendsConstructorBaseInput invitationlist = new FriendsConstructorBaseInput();
             invitationlist.GetInvitaions(MyName);
         }
@@ -50,16 +51,18 @@ namespace chatapplication
             if (list == null)
                 throw new ArgumentNullException(nameof(list));
 
-            foreach (var item in list)
-            {
-                FriendsUsernames.Add(item);
-            }
-
             FriendsConstructorBaseInput friendsConstructor = new FriendsConstructorBaseInput();
             foreach (var friendname in list)
             {
                 friendsConstructor.InviteFriend(MyName, friendname);
             }
+
+            foreach (var item in list)
+            {
+                FriendsUsernames.Add(item);
+            }
+
+           
         }
     }
 }

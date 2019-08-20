@@ -61,6 +61,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
+                connection.Open();
                 string query = $"select UserName from Participants";
                 List<string> list = new List<string>();
                 //Create Command
@@ -80,8 +81,10 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                 if (list.Contains(registrationinforamtion.Name))
                 {
                     Console.WriteLine("UserName already exists");
+                    connection.CloseAsync();
                     return false;
                 }
+                connection.CloseAsync();
                 return true;
             }
         }

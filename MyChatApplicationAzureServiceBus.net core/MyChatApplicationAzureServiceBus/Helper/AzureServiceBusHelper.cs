@@ -18,7 +18,7 @@ namespace ChatServiceBus
         //Retrieve the connection string
         private static readonly string ConnectionString = "Endpoint=sb://chatserviceapp.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=++EgzIb8X+oMd9w+vLluwTLUyPHKT8y2VP1mo4EcJM0=";
         //Retrieve the topic's name
-        private static readonly string TopicName = "chatperform";
+        private static readonly string TopicName = "1chatperform";
 
         public static SubscriptionClient Client { get; private set; }
 
@@ -26,7 +26,7 @@ namespace ChatServiceBus
         /// <summary>
         /// Method to create a topic for the first configuration
         /// </summary>
-        public static void CreateTopic()
+        public static void CreateTopic(string TopicName)
         {
             //Retrieve the connection string
             if (ConnectionString != null)
@@ -34,14 +34,22 @@ namespace ChatServiceBus
                 //connection string not null, get the namespace manager
                 var namespaceManager = new
                     ManagementClient(ConnectionString);
-
                 // Create the topic if it does not exist already.
-                if (namespaceManager.GetTopicAsync(TopicName).Result.Status == EntityStatus.Unknown ||
-                    namespaceManager.GetTopicAsync(TopicName).Result.Status == EntityStatus.Disabled)
+                try
+                {
+                    if (namespaceManager.GetTopicAsync(TopicName).Result.Status == EntityStatus.Unknown ||
+                   namespaceManager.GetTopicAsync(TopicName).Result.Status == EntityStatus.Disabled)
+                    {
+                        TopicDescription td = new TopicDescription(TopicName);
+                        namespaceManager.CreateTopicAsync(td);
+                    }
+                }
+                catch (Exception)
                 {
                     TopicDescription td = new TopicDescription(TopicName);
                     namespaceManager.CreateTopicAsync(td);
                 }
+
             }
         }
 
@@ -50,7 +58,7 @@ namespace ChatServiceBus
         /// Get all the subscription of the chat topic (it will be the user names)
         /// </summary>
         /// <returns>the list of subscription</returns>
-        public List<SubscriptionDescription> GetSubscriptionsNames()
+        public List<SubscriptionDescription> GetSubscriptionsNames(string TopicName)
         {
 
             if (ConnectionString != null)
@@ -74,28 +82,22 @@ namespace ChatServiceBus
         /// <summary>
         /// Method to create a subscription when a new user is coming
         /// </summary>
-        /// <param name="userName">the name of the suscription ,which will be the user name</param>
-        public static void CreateSubscription(string userName)
+        /// <param name="UserNames">the name of the suscription ,which will be the user name</param>
+        public static void CreateSubscription(string TopicName, List<string> UserNames)
         {
-            if (string.IsNullOrWhiteSpace(userName))
-                throw new ArgumentException("message", nameof(userName));
-
-            //to avoid any typo, lower the string
-            string userNameLow = userName.ToLowerInvariant();
-
-            //var connectionString =
-            //      ConfigurationManager.AppSettings["Service.Bus.ConnectionString"] ?? null;
+            if (UserNames == null) throw new ArgumentNullException(nameof(UserNames));
 
             if (ConnectionString != null)
             {
-                //var topicName = ConfigurationManager.AppSettings["Service.Bus.Topic"];
-
                 //connection string not null, get the namespace manager
                 var namespaceManager = new
                 ManagementClient(ConnectionString);
 
                 //Create new subscription
-                namespaceManager.CreateSubscriptionAsync(TopicName, userNameLow);
+                foreach (var username in UserNames)
+                {
+                    namespaceManager.CreateSubscriptionAsync(TopicName, username.ToLowerInvariant());
+                }
             }
         }
 

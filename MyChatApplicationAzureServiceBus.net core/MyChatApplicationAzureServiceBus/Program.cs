@@ -23,12 +23,6 @@ namespace ChatServiceBus
 
         static void Main(string[] args)
         {
-            if (args is null)
-                throw new ArgumentNullException(nameof(args));
-
-            //Initiate the topic if not exist
-            AzureServiceBusHelper.CreateTopic();
-
             //get the current user information
             JoinChatParticipant();
 
@@ -81,7 +75,7 @@ namespace ChatServiceBus
                 JoinChatParticipant();
                 return;
             }
-            
+
         }
 
         /// <summary>
@@ -91,10 +85,10 @@ namespace ChatServiceBus
         {
             user = new User(UserName, Password);
             Console.WriteLine("Hello " + UserName + ", which mode do you want to use?");
-            Console.WriteLine("1. Receive My Messages");
+            Console.WriteLine("1. Receive my messages");
             Console.WriteLine("2. Invite friends");
             Console.WriteLine("3. Invitations");
-            Console.WriteLine("4. Send Messages");
+            Console.WriteLine("4. Send messages");
             Console.WriteLine("5. Exit");
             string result = Console.ReadLine();
             switch (result)
@@ -154,14 +148,11 @@ namespace ChatServiceBus
         /// </summary>
         private static void DisplayReceiverMenu()
         {
-            Console.WriteLine("New Messages will be received here. (Press 1 and enter to return to main menu)");
+            Console.WriteLine("New Messages will be received here.");
             AzureServiceBusHelper.ReceiveMessageSubscription(user.UserName);
-            string result = Console.ReadLine();
-            if (result == "1")
-            {
-                MainMenu();
-                return;
-            }
+            Console.ReadLine();
+            MainMenu();
+            return;
         }
 
         /// <summary>
@@ -181,7 +172,7 @@ namespace ChatServiceBus
                 return;
             }
             //check if the sender exist            
-            if (toUserName.ToLowerInvariant() != "all" && !AzureServiceBusHelper.IsSubscriptionExist(toUserName))////////
+            if (toUserName.ToLowerInvariant() != "all" && !AzureServiceBusHelper.IsSubscriptionExist(toUserName))
             {
                 Console.WriteLine("Your user doesn't exist, please choose another one");
                 DisplaySenderMenu();
@@ -190,7 +181,7 @@ namespace ChatServiceBus
 
             if (toUserName == "all")
             {
-                ChatPartisipants chat = new ChatPartisipants("Fast chat", user.Friends.GetFriendsUsernames().ToList());
+                ChatPartisipants chat = new ChatPartisipants(user.Friends.GetFriendsUsernames().ToHashSet());
                 Console.WriteLine("Type your message for " + string.Join(", ", toUserName.ToList()));
                 string message = Console.ReadLine();
                 //check if we still don't have to exit
@@ -203,7 +194,7 @@ namespace ChatServiceBus
             }
             else
             {
-                ChatPartisipants chat = new ChatPartisipants("Fast chat", toUserName.Split(' ').ToList());
+                ChatPartisipants chat = new ChatPartisipants(toUserName.Split(' ').ToHashSet());
                 Console.WriteLine("Type your message for " + string.Join(", ", toUserName.Split(' ').ToList()));
                 string message = Console.ReadLine();
                 //check if we still don't have to exit

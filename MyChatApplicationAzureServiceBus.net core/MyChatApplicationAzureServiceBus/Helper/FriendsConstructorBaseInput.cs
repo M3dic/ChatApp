@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using ChatServiceBus;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -85,10 +86,8 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                     }
                 }
 
-                //close Data Reader
                 dataReader.Close();
 
-                //close connection
                 connection.CloseAsync();
             }
         }
@@ -104,9 +103,11 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.OpenAsync();
+
                 string query = $"DELETE FROM Friends WHERE UserName='{friendusername}' and FriendsUsername = '{username}'";
                 MySqlCommand cmd = new MySqlCommand(query,connection);
                 cmd.ExecuteNonQuery();
+
                 connection.CloseAsync();
             }
          
@@ -123,20 +124,27 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.OpenAsync();
+                string topicname = username + " " + friendusername;
 
                 string query = $"Update Friends Set Accepted = 'Y' where UserName = '{friendusername}' and FriendsUsername = '{username}'";
+
                 string query1 = $"INSERT INTO Friends" +
                    $" (UserName,FriendsUsername,Accepted) " +
                    $"VALUES('{username}', '{friendusername}', 'Y')";
+
+                string query2 = $"Create table {topicname}(string SenderName varchar(50) not null, string Messege varchar(2000));";
 
                 MySqlCommand cmd = new MySqlCommand(query, connection);
 
                 cmd.ExecuteNonQuery();
                 cmd.CommandText = query1;
                 cmd.ExecuteNonQuery();
+                cmd.CommandText = query2;
+                cmd.ExecuteNonQuery();
 
                 connection.CloseAsync();
-
+                AzureServiceBusHelper.CreateTopic(topicname);
+                AzureServiceBusHelper.CreateSubscription(topicname, new List<string>() { username, friendusername });
                 Console.WriteLine("Successfully added new friend");
             }
         }

@@ -23,11 +23,12 @@ namespace chatapplication
             Friends = new Friends(UserName);
         }
         public ChatPartisipants ChatRefferance { get; private set; }
-        public void OpenChat(string chatname, List<string> usernames)
+        public void OpenChat(string chatname, HashSet<string> usernames)
         {
             if (usernames is null)
                 throw new ArgumentNullException(nameof(usernames));
-            ChatRefferance = new ChatPartisipants(chatname,usernames);
+
+            ChatRefferance = new ChatPartisipants(usernames);
         }
     }
 }

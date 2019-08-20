@@ -7,19 +7,14 @@ namespace chatapplication
 {
     public class ChatPartisipants
     { 
-        public Queue ChatPartisipantsNames { get; private set; }
-        public string ChatName { get; private set; }
+        public HashSet<string> ChatPartisipantsNames { get; private set; }
         public string  Message { get; set; }
-        public ChatPartisipants(string chatname, List<string> username)
+        public ChatPartisipants(HashSet<string> username)
         {
-            if (string.IsNullOrWhiteSpace(chatname))
-                throw new ArgumentNullException(nameof(chatname));
-            ChatPartisipantsNames = new Queue();
-            ChatName = chatname;
-            foreach (var item in username)
-            {
-                ChatPartisipantsNames.Enqueue(item);
-            }
+            if (username == null)
+                throw new ArgumentNullException(nameof(username));
+
+            ChatPartisipantsNames = username;
         }
         ~ChatPartisipants()
         {
@@ -40,7 +35,7 @@ namespace chatapplication
         {
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentNullException(nameof(username));
-            ChatPartisipantsNames.Enqueue(username);
+            ChatPartisipantsNames.Add(username);
         }
 
     }
