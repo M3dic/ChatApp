@@ -2,7 +2,6 @@
 using Microsoft.Azure.ServiceBus.Management;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,12 +21,31 @@ namespace ChatServiceBus
 
         public static SubscriptionClient Client { get; private set; }
 
+        public static void CheckTopic(string TopicName)
+        {
+            if (string.IsNullOrWhiteSpace(TopicName))
+                throw new ArgumentNullException(nameof(TopicName));
+
+            if (ConnectionString != null)
+            {
+                var namespaceManager = new
+                  ManagementClient(ConnectionString);
+                List<TopicDescription> topics = namespaceManager.GetTopicsAsync().Result.ToList();
+                foreach (var item in topics)
+                {
+
+                }
+            }
+        }
 
         /// <summary>
         /// Method to create a topic for the first configuration
         /// </summary>
         public static void CreateTopic(string TopicName)
         {
+            if (string.IsNullOrWhiteSpace(TopicName))
+                throw new ArgumentNullException(nameof(TopicName));
+
             //Retrieve the connection string
             if (ConnectionString != null)
             {
@@ -99,34 +117,6 @@ namespace ChatServiceBus
                     namespaceManager.CreateSubscriptionAsync(TopicName, username.ToLowerInvariant());
                 }
             }
-        }
-
-        /// <summary>
-        /// Method to check if a subscription exist before sending the message
-        /// </summary>
-        /// <param name="toUserName">the user name of the user which we want to send a message</param>
-        /// <returns>true if user is known</returns>
-        public static bool IsSubscriptionExist(string toUserName)
-        {
-            if (string.IsNullOrWhiteSpace(toUserName))
-                throw new ArgumentNullException(nameof(toUserName));
-
-            //to avoid any typo, lower the string
-            string toUserNameLow = toUserName.ToLowerInvariant();
-
-
-            if (ConnectionString != null)
-            {
-                //connection string not null, get the namespace manager
-                var namespaceManager = new
-                ManagementClient(ConnectionString);
-
-                //check if subscription exists
-                if (namespaceManager.SubscriptionExistsAsync(TopicName, toUserNameLow).Result.ToString() != string.Empty)
-                    return true;
-            }
-            //connection string null so return false, we can't get the needed info
-            return false;
         }
 
         /// <summary>

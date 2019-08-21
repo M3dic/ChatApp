@@ -9,11 +9,6 @@ using MyChatApplicationAzureServiceBus.Constructor;
 
 namespace ChatServiceBus
 {
-    /// @Author : Loic Sterckx
-    /// @Date : 30 October 2016
-    /// <summary>
-    /// Class that contains the main method of the software
-    /// </summary>
     class Program
     {
         private static string UserName;
@@ -25,7 +20,6 @@ namespace ChatServiceBus
         {
             //get the current user information
             JoinChatParticipant();
-
         }
 
         private static void JoinChatParticipant()
@@ -119,7 +113,7 @@ namespace ChatServiceBus
         private static void DisplayInvitations()
         {
             Console.WriteLine("Invitation list. (Press 1 and enter to return to main menu)");
-            user.Friends.LoadFriends(UserName);
+            user.Friends.LoadFriends();
             MainMenu();
         }
         /// <summary>
@@ -165,24 +159,18 @@ namespace ChatServiceBus
             Console.WriteLine(string.Join("  \n", user.Friends.GetFriendsUsernames()));
             Console.WriteLine("All");
             string toUserName = Console.ReadLine();
+
             //check if we have to exit
             if (toUserName == "1")
             {
                 MainMenu();
                 return;
             }
-            //check if the sender exist            
-            if (toUserName.ToLowerInvariant() != "all" && !AzureServiceBusHelper.IsSubscriptionExist(toUserName))
-            {
-                Console.WriteLine("Your user doesn't exist, please choose another one");
-                DisplaySenderMenu();
-                return;
-            }
 
             if (toUserName == "all")
             {
                 ChatPartisipants chat = new ChatPartisipants(user.Friends.GetFriendsUsernames().ToHashSet());
-                Console.WriteLine("Type your message for " + string.Join(", ", toUserName.ToList()));
+                Console.WriteLine("Type your message for " + string.Join(", ", user.Friends.GetFriendsUsernames().ToHashSet()));
                 string message = Console.ReadLine();
                 //check if we still don't have to exit
                 if (message == "1")
@@ -190,12 +178,17 @@ namespace ChatServiceBus
                     MainMenu();
                     return;
                 }
-                chat.SendMessage(message, UserName);
+                chat.SendMessage(message, user.UserName);
             }
             else
             {
-                ChatPartisipants chat = new ChatPartisipants(toUserName.Split(' ').ToHashSet());
-                Console.WriteLine("Type your message for " + string.Join(", ", toUserName.Split(' ').ToList()));
+                HashSet<string> users = new HashSet<string>();
+                foreach (var item in toUserName.Split(' ').ToHashSet())
+                    if (user.Friends.GetFriendsUsernames().Contains(item))
+                        users.Add(item);
+
+                ChatPartisipants chat = new ChatPartisipants(users);
+                Console.WriteLine("Type your message for " + string.Join(", ", users));
                 string message = Console.ReadLine();
                 //check if we still don't have to exit
                 if (message == "1")
@@ -203,9 +196,8 @@ namespace ChatServiceBus
                     MainMenu();
                     return;
                 }
-                chat.SendMessage(message, UserName);
+                chat.SendMessage(message, user.UserName);
             }
-
 
             //check to send another message or not
             Console.WriteLine("Do you want to send another one? (Y/N)");

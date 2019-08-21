@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace chatapplication
 {
     public class ChatPartisipants
-    { 
+    {
         public HashSet<string> ChatPartisipantsNames { get; private set; }
-        public string  Message { get; set; }
+        public string Message { get; set; }
         public ChatPartisipants(HashSet<string> username)
         {
             if (username == null)
@@ -16,11 +16,7 @@ namespace chatapplication
 
             ChatPartisipantsNames = username;
         }
-        ~ChatPartisipants()
-        {
-            Console.WriteLine("Successfully leaved chat!");
-        }
-        public void SendMessage(string message,string fromuser)
+        public void SendMessage(string message, string fromuser)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(nameof(message));

@@ -32,10 +32,8 @@ namespace chatapplication
             HashSet<string> peoples = friendsConstructor.GetFriendsNames(MyName);
             FriendsUsernames = peoples;
         }
-        public void LoadFriends(string myname)
+        public void LoadFriends()
         {
-            if (myname is null)
-                throw new ArgumentNullException(nameof(myname));
 
             FriendsConstructorBaseInput invitationlist = new FriendsConstructorBaseInput();
             invitationlist.GetInvitaions(MyName);
