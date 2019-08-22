@@ -2,6 +2,7 @@
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace MyChatApplicationAzureServiceBus.Constructor
@@ -69,14 +70,14 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                 //Read the data and store them in the list
                 while (dataReader.Read())
                 {
-                    Console.WriteLine("Username: "+ dataReader["UserName"].ToString().ToLowerInvariant()+" has invited you.");
+                    Console.WriteLine("Username: " + dataReader["UserName"].ToString().ToLowerInvariant() + " has invited you.");
                     Console.Write("Do you want to accept him (Y/N): ");
                     string answer = Console.ReadLine().ToUpperInvariant();
                     if (answer == "Y")
                     {
-                        AcceptFriendInvitation(username,dataReader["UserName"].ToString().ToLowerInvariant());
+                        AcceptFriendInvitation(username, dataReader["UserName"].ToString().ToLowerInvariant());
                     }
-                    else if(answer == "N")
+                    else if (answer == "N")
                     {
                         RemoveInvitation(dataReader["UserName"].ToString().ToLowerInvariant(), username);
                     }
@@ -105,12 +106,12 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                 connection.OpenAsync();
 
                 string query = $"DELETE FROM Friends WHERE UserName='{friendusername}' and FriendsUsername = '{username}'";
-                MySqlCommand cmd = new MySqlCommand(query,connection);
+                MySqlCommand cmd = new MySqlCommand(query, connection);
                 cmd.ExecuteNonQuery();
 
                 connection.CloseAsync();
             }
-         
+
         }
 
         private void AcceptFriendInvitation(string username, string friendusername)
@@ -149,6 +150,71 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             }
         }
 
+        public static void CreateMultiplechat(string user, string tabletopic)
+        {
+            List<string> topics = AzureServiceBusHelper.TakeAllTopicsForUser(user);
+            string topic = null;
+            bool f = true;
+            foreach (var top in topics.OrderBy(x => x.Length))
+            {
+                f = true;
+                foreach (var name in (tabletopic + '1' + user).ToString().Split('1').ToList())
+                {
+                    if (top.Split('1').ToList().Contains(name) && top.Split('1').Length == (tabletopic + '1' + user).ToString().Split('1').Length && f)
+                    {
+                        topic = top;
+                    }
+                    else
+                    {
+                        f = false;
+                        topic = null;
+                        continue;
+                    }
+                }
+            }
+            if (topic==null)
+            {
+                AzureServiceBusHelper.CreateTopic(tabletopic);
+                AzureServiceBusHelper.CreateSubscription(tabletopic, tabletopic.Split('1').ToList());
+                string query = $"Create table `{tabletopic}`(SenderName varchar(50) not null, Messege varchar(1000));";
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.OpenAsync();
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+                    cmd.ExecuteNonQuery();
+                    connection.CloseAsync();
+                }
+                Console.WriteLine("New group chat has been successfully created!");
+            }
+            else
+            {
+                string query = $"SELECT * FROM ChatApp.{topic} order by Messege desc";
+
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.OpenAsync();
+                    //create command and assign the query and connection from the constructor
+                    MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                    MySqlDataReader dataReader = cmd.ExecuteReader();
+                    
+                    //Read the data and store them in the list
+                    int i = 10;
+                    while (dataReader.Read())
+                    {
+                        Console.WriteLine(dataReader["SenderName"].ToString().ToLowerInvariant() + ": " + dataReader["Messege"].ToString());
+                        i--;
+                        if (i < 0) break;
+                    }
+
+                    //close Data Reader
+                    dataReader.Close();
+
+                    connection.CloseAsync();
+                }
+            }
+        }
+
         static internal IEnumerable<string> GetSubscriptionsNames(string username)
         {
             string query = $"SELECT UserName FROM ChatApp.Participants where UserName != '{username}'";
@@ -174,6 +240,22 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                 connection.CloseAsync();
             }
             return list;
+        }
+
+        public static void SaveMessage(string tabletopic, string username, string messaage)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.OpenAsync();
+
+                string query = $"INSERT INTO {tabletopic}" +
+                   $" (SenderName,Messege) " +
+                   $"VALUES('{username}', '{messaage}')";
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+
+                connection.CloseAsync();
+            }
         }
 
         public HashSet<string> GetFriendsNames(string username)

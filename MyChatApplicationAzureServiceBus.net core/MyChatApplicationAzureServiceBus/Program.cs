@@ -42,7 +42,10 @@ namespace ChatServiceBus
                     JoinChatParticipant();
                 //show the menu
                 else
+                {
+                    user = new User(UserName, Password);
                     MainMenu();
+                }
                 JoinChatParticipant();
             }
             else if (option.ToLowerInvariant() == "register")
@@ -62,6 +65,7 @@ namespace ChatServiceBus
                 //show the menu
                 else
                 {
+                    user = new User(UserName, Password);
                     MainMenu();
                 }
                 JoinChatParticipant();
@@ -79,8 +83,6 @@ namespace ChatServiceBus
         /// </summary>
         private static void MainMenu()
         {
-            user = new User(UserName, Password);
-
             Console.WriteLine("Hello " + UserName + ", which mode do you want to use?");
             Console.WriteLine("1. Receive my messages");
             Console.WriteLine("2. Invite friends");
@@ -146,7 +148,10 @@ namespace ChatServiceBus
         private static void DisplayReceiverMenu()
         {
             Console.WriteLine("New Messages will be received here.");
-            AzureServiceBusHelper.ReceiveMessageSubscription(user.UserName);
+            foreach (var topic in AzureServiceBusHelper.TakeAllTopicsForUser(user.UserName))
+            {
+                AzureServiceBusHelper.ReceiveMessageSubscription(topic, user.UserName);
+            }
             Console.ReadLine();
             MainMenu();
             return;
@@ -190,7 +195,7 @@ namespace ChatServiceBus
                     if (user.Friends.GetFriendsUsernames().Contains(item))
                         users.Add(item);
 
-                ChatPartisipants chat = new ChatPartisipants(users);
+                ChatPartisipants chat = new ChatPartisipants(user.UserName,users);
                 Console.WriteLine("Type your message for " + string.Join(", ", users));
                 string message = Console.ReadLine();
                 //check if we still don't have to exit

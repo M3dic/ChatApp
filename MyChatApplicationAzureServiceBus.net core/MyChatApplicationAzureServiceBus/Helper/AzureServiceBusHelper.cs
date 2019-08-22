@@ -16,8 +16,6 @@ namespace ChatServiceBus
     {
         //Retrieve the connection string
         private static readonly string ConnectionString = "Endpoint=sb://chatserviceapp.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=++EgzIb8X+oMd9w+vLluwTLUyPHKT8y2VP1mo4EcJM0=";
-        //Retrieve the topic's name
-        private static readonly string TopicName = "1chatperform";
 
         public static SubscriptionClient Client { get; private set; }
 
@@ -145,19 +143,20 @@ namespace ChatServiceBus
                     TopicClient(ConnectionString, TopicName);
 
                 Message message = new Message(Encoding.ASCII.GetBytes(fromUserName + ": " + messageContent));
-                message.UserProperties["UserName"] = toUserNameLow;
+                message.UserProperties["UserName"] = toUserName;
                 Client.SendAsync(message);
 
             }
         }
 
-
+        private static string lop;
         /// <summary>
         /// Method to Receive a message from a subscription
         /// </summary>
         /// <param name="userName">the username of the user to get messages</param>
-        public static void ReceiveMessageSubscription(string userName)
+        public static void ReceiveMessageSubscription(string TopicName, string userName)
         {
+            lop = userName;
             if (string.IsNullOrWhiteSpace(userName))
                 throw new ArgumentNullException(nameof(userName));
 
@@ -203,6 +202,7 @@ namespace ChatServiceBus
         static async Task ProcessMessagesAsync(Message message, CancellationToken token)
         {
             // Process the message.
+            if (message.UserProperties["UserName"].ToString()==lop)
             Console.WriteLine("Received message: \n" + Encoding.UTF8.GetString(message.Body));
 
             // This will complete the message, other options are availalbe
