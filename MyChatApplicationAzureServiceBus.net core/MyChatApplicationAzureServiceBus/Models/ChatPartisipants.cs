@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace chatapplication
 {
@@ -16,23 +17,18 @@ namespace chatapplication
 
             ChatPartisipantsNames = username;
         }
-        public void SendMessage(string message, string fromuser)
+        public void SendMessage(List<string> TopicNames, string message, string fromuser)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new ArgumentNullException(nameof(message));
             Message = message;
             foreach (var toUserName in ChatPartisipantsNames)
             {
-                AzureServiceBusHelper.SendMessageTopic(toUserName.ToString(), fromuser, message);
+                string TopicName = TopicNames.Find(s => s.Split('1').ToList().Contains(toUserName));//>>>>>>>>?????
+                AzureServiceBusHelper.SendMessageTopic(TopicName, toUserName.ToString(), fromuser, message);
             }
             Console.WriteLine("\n**Message Sent!**");
         }
-        public void AddPeopleToChat(string username)
-        {
-            if (string.IsNullOrWhiteSpace(username))
-                throw new ArgumentNullException(nameof(username));
-            ChatPartisipantsNames.Add(username);
-        }
-
+       
     }
 }

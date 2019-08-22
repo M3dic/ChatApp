@@ -61,7 +61,9 @@ namespace ChatServiceBus
                     JoinChatParticipant();
                 //show the menu
                 else
+                {
                     MainMenu();
+                }
                 JoinChatParticipant();
             }
             else
@@ -78,6 +80,7 @@ namespace ChatServiceBus
         private static void MainMenu()
         {
             user = new User(UserName, Password);
+
             Console.WriteLine("Hello " + UserName + ", which mode do you want to use?");
             Console.WriteLine("1. Receive my messages");
             Console.WriteLine("2. Invite friends");
@@ -166,7 +169,7 @@ namespace ChatServiceBus
                 MainMenu();
                 return;
             }
-
+            List<string> topicpats = user.Friends.GetAllTopics();
             if (toUserName == "all")
             {
                 ChatPartisipants chat = new ChatPartisipants(user.Friends.GetFriendsUsernames().ToHashSet());
@@ -178,7 +181,7 @@ namespace ChatServiceBus
                     MainMenu();
                     return;
                 }
-                chat.SendMessage(message, user.UserName);
+                chat.SendMessage(topicpats, message, user.UserName);
             }
             else
             {
@@ -196,7 +199,7 @@ namespace ChatServiceBus
                     MainMenu();
                     return;
                 }
-                chat.SendMessage(message, user.UserName);
+                chat.SendMessage(topicpats,message, user.UserName);
             }
 
             //check to send another message or not

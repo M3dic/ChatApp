@@ -124,7 +124,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.OpenAsync();
-                string topicname = username + " " + friendusername;
+                string topicname = username + "1" + friendusername;
 
                 string query = $"Update Friends Set Accepted = 'Y' where UserName = '{friendusername}' and FriendsUsername = '{username}'";
 
@@ -132,7 +132,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                    $" (UserName,FriendsUsername,Accepted) " +
                    $"VALUES('{username}', '{friendusername}', 'Y')";
 
-                string query2 = $"Create table {topicname}(string SenderName varchar(50) not null, string Messege varchar(2000));";
+                string query2 = $"Create table `{topicname}`(SenderName varchar(50) not null, Messege varchar(1000));";
 
                 MySqlCommand cmd = new MySqlCommand(query, connection);
 

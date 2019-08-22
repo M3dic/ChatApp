@@ -21,21 +21,21 @@ namespace ChatServiceBus
 
         public static SubscriptionClient Client { get; private set; }
 
-        public static void CheckTopic(string TopicName)
+        public static List<string> TakeAllTopicsForUser(string username)
         {
-            if (string.IsNullOrWhiteSpace(TopicName))
-                throw new ArgumentNullException(nameof(TopicName));
-
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentNullException(nameof(username));
+            List<string> topiclist = new List<string>();
             if (ConnectionString != null)
             {
                 var namespaceManager = new
                   ManagementClient(ConnectionString);
                 List<TopicDescription> topics = namespaceManager.GetTopicsAsync().Result.ToList();
                 foreach (var item in topics)
-                {
-
-                }
+                    if (item.Path.ToString().Split('1').ToList().Contains(username))
+                        topiclist.Add(item.Path.ToString());
             }
+            return topiclist;
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace ChatServiceBus
         /// </summary>
         /// <param name="toUserName">the username to who send a message</param>
         /// <param name="messageContent">the content of the message</param>
-        public static void SendMessageTopic(string toUserName, string fromUserName, string messageContent)
+        public static void SendMessageTopic(string TopicName, string toUserName, string fromUserName, string messageContent)
         {
             if (string.IsNullOrWhiteSpace(toUserName))
                 throw new ArgumentNullException(nameof(toUserName));

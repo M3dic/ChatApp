@@ -1,4 +1,5 @@
-﻿using MyChatApplicationAzureServiceBus.Constructor;
+﻿using ChatServiceBus;
+using MyChatApplicationAzureServiceBus.Constructor;
 using System;
 using System.Collections.Generic;
 
@@ -6,7 +7,8 @@ namespace chatapplication
 {
     public class Friends
     {
-        private readonly HashSet<string> FriendsUsernames;
+        private HashSet<string> FriendsUsernames;
+        private List<string> TopicsPaths;
         private string MyName { get; set; }
 
         public HashSet<string> GetFriendsUsernames()
@@ -31,6 +33,7 @@ namespace chatapplication
             //Get it hash set because of usefull check operation if many invitaions have sent
             HashSet<string> peoples = friendsConstructor.GetFriendsNames(MyName);
             FriendsUsernames = peoples;
+            TopicsPaths = AzureServiceBusHelper.TakeAllTopicsForUser(MyUsername);
         }
         public void LoadFriends()
         {
@@ -59,8 +62,11 @@ namespace chatapplication
             {
                 FriendsUsernames.Add(item);
             }
+        }
 
-           
+        public List<string> GetAllTopics()
+        {
+            return TopicsPaths;
         }
     }
 }
