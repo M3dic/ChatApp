@@ -136,10 +136,12 @@ namespace ChatServiceBus
             if (friendsnames.First() == "1")
             {
                 MainMenu();
-                return;
             }
-            user.Friends.AddNewFriends(friendsnames);
-            MainMenu();
+            else
+            {
+                user.Friends.AddNewFriends(friendsnames);
+                MainMenu();
+            }
         }
 
         /// <summary>
@@ -154,7 +156,6 @@ namespace ChatServiceBus
             }
             Console.ReadLine();
             MainMenu();
-            return;
         }
 
         /// <summary>
@@ -184,8 +185,8 @@ namespace ChatServiceBus
                 if (message == "1")
                 {
                     MainMenu();
-                    return;
                 }
+                else
                 chat.SendMessage(topicpats, message, user.UserName);
             }
             else
@@ -202,8 +203,8 @@ namespace ChatServiceBus
                 if (message == "1")
                 {
                     MainMenu();
-                    return;
                 }
+                else
                 chat.SendMessage(topicpats,message, user.UserName);
             }
 

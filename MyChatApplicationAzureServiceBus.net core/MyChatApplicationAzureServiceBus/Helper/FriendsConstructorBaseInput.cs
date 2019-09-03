@@ -1,4 +1,5 @@
-﻿using ChatServiceBus;
+﻿using chatapplication;
+using ChatServiceBus;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -53,7 +54,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                 connection.CloseAsync();
             }
         }
-        internal void GetInvitaions(string username)
+        internal void GetInvitaions(Friends s ,string username)
         {
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentNullException(nameof(username));
@@ -76,6 +77,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                     if (answer == "Y")
                     {
                         AcceptFriendInvitation(username, dataReader["UserName"].ToString().ToLowerInvariant());
+                        s.AddacceptedFriend(dataReader["UserName"].ToString().ToLowerInvariant());
                     }
                     else if (answer == "N")
                     {
@@ -133,7 +135,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                    $" (UserName,FriendsUsername,Accepted) " +
                    $"VALUES('{username}', '{friendusername}', 'Y')";
 
-                string query2 = $"Create table `{topicname}`(SenderName varchar(50) not null, Messege varchar(1000));";
+                string query2 = $"Create table `{topicname}`(messageid int auto_increment not null primary key, SenderName varchar(50) not null, Messege varchar(1000));";
 
                 MySqlCommand cmd = new MySqlCommand(query, connection);
 
@@ -163,6 +165,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                     if (top.Split('1').ToList().Contains(name) && top.Split('1').Length == (tabletopic + '1' + user).ToString().Split('1').Length && f)
                     {
                         topic = top;
+                        break;
                     }
                     else
                     {
@@ -172,11 +175,11 @@ namespace MyChatApplicationAzureServiceBus.Constructor
                     }
                 }
             }
-            if (topic==null)
+            if (topic==null&&tabletopic.Contains("1"))
             {
                 AzureServiceBusHelper.CreateTopic(tabletopic);
                 AzureServiceBusHelper.CreateSubscription(tabletopic, tabletopic.Split('1').ToList());
-                string query = $"Create table `{tabletopic}`(SenderName varchar(50) not null, Messege varchar(1000));";
+                string query = $"Create table `{tabletopic}`(messageid int auto_increment not null pimary key, SenderName varchar(50) not null, Messege varchar(1000));";
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
                     connection.OpenAsync();
@@ -188,7 +191,7 @@ namespace MyChatApplicationAzureServiceBus.Constructor
             }
             else
             {
-                string query = $"SELECT * FROM ChatApp.{topic} order by Messege desc";
+                string query = $"SELECT * FROM ChatApp.{topic} order by messageid";
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {

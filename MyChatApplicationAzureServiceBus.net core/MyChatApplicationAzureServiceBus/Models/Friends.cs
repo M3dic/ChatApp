@@ -9,7 +9,7 @@ namespace chatapplication
     {
         private HashSet<string> FriendsUsernames;
         private List<string> TopicsPaths;
-        private string MyName { get; set; }
+        private string MyName { get; set; } 
 
         public HashSet<string> GetFriendsUsernames()
         {
@@ -35,11 +35,18 @@ namespace chatapplication
             FriendsUsernames = peoples;
             TopicsPaths = AzureServiceBusHelper.TakeAllTopicsForUser(MyUsername);
         }
+        public void AddacceptedFriend(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException(nameof(name));
+
+            this.FriendsUsernames.Add(name);
+        }
         public void LoadFriends()
         {
 
             FriendsConstructorBaseInput invitationlist = new FriendsConstructorBaseInput();
-            invitationlist.GetInvitaions(MyName);
+            invitationlist.GetInvitaions(this,MyName);
         }
         public void RemoveFriend(string name)//TODO
         {
